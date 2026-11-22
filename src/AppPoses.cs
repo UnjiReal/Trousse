@@ -81,10 +81,8 @@ namespace SkyrimOutfit
 
         private async Task ScanPoses(bool force)
         {
-            string staging = vortexPath.Text.Trim().Trim('"');
-            string body = bodyPath.Text.Trim().Trim('"');
-            string data = catalog == null ? null : catalog.DataRoot;
-            if (data == null && Preferences.HasBodySlide(body)) data = Catalog.GameData(body);
+            string staging = UseModOrganizer ? null : vortexPath.Text.Trim().Trim('"');
+            string data = SelectedDataPath();
             if (poses != null && !force && Files.Comparer.Equals(staging, posesStaging) && Files.Comparer.Equals(data, posesData)) return;
             if (!CanReloadPoses()) return;
             await RunBusy(T("Scanning Poser Hotkeys pose packs…", "Scansione pacchetti pose di Poser Hotkeys…"), async () => {

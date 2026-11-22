@@ -11,24 +11,31 @@ namespace SkyrimOutfit
     {
         private readonly Dictionary<string, string> nexus = new Dictionary<string, string>(Files.Comparer);
         private readonly HashSet<string> manual = new HashSet<string>(Files.Comparer);
+        private readonly bool forVortex;
 
         internal PackageDependencies(Catalog catalog, IEnumerable<Piece> pieces, bool usesSmp, ModestyRule[] rules)
         {
+            forVortex = catalog.Organizer == null;
             Add("BodySlide and Outfit Studio 6.1+", "201");
             foreach (var piece in pieces)
                 Add(piece.ModFolder == null ? Path.GetFileName(piece.ProjectFile) + " · " + piece.Name : piece.ModName, piece.NexusId);
             if (usesSmp)
             {
                 const string dll = @"SKSE\Plugins\hdtSMP64.dll";
-                string owner = OutfitProvenance.DeployedMod(catalog.DataRoot, dll);
-                if (owner == null && File.Exists(Path.Combine(catalog.DataRoot, dll)))
+                string owner = forVortex ? OutfitProvenance.DeployedMod(catalog.DataRoot, dll) : catalog.Organizer.ModFor(dll);
+                if (forVortex && owner == null && File.Exists(Path.Combine(catalog.DataRoot, dll)))
                 {
                     var candidates = Files.Children(catalog.StagingRoot, "*", true).Where(folder =>
                         File.Exists(Path.Combine(folder, dll)) || File.Exists(Path.Combine(folder, "Data", dll))).Take(2).ToArray();
                     if (candidates.Length == 1) owner = Path.GetFileName(candidates[0]);
                 }
                 string mod, id;
-                Catalog.GetModIdentity(owner, out mod, out id);
+                if (forVortex) Catalog.GetModIdentity(owner, out mod, out id);
+                else
+                {
+                    mod = owner == null ? null : Path.GetFileName(owner);
+                    id = owner == null ? null : ModOrganizerProfile.NexusId(owner);
+                }
                 Add(mod ?? "HDT-SMP runtime", id);
             }
             if (rules.Length > 0)
@@ -53,12 +60,15 @@ namespace SkyrimOutfit
         {
             var ordered = nexus.OrderBy(item => item.Value, Files.Comparer).ToArray();
             var requirements = ordered.Select(item => item.Value + " · " + PackageReports.NexusUrl(item.Key));
-            var text = new[] { title, "", italian ? "Dipendenze riconosciute da Vortex" : "Dependencies tracked by Vortex" }
+            var text = new[] { title, "", forVortex ?
+                (italian ? "Dipendenze riconosciute da Vortex" : "Dependencies tracked by Vortex") :
+                (italian ? "Dipendenze su Nexus Mods" : "Dependencies on Nexus Mods") }
                 .Concat(requirements);
             if (manual.Count > 0)
                 text = text.Concat(new[] { "", italian ? "Dipendenze da verificare a mano" : "Dependencies to check manually" })
                     .Concat(manual.OrderBy(name => name, Files.Comparer));
             File.WriteAllLines(Path.Combine(package, "required_mods.txt"), text, new UTF8Encoding(false));
+            if (!forVortex) return;
 
             // Vortex consumes these rules during ordinary ZIP installation.
             var instructions = ordered.Select(item => new {

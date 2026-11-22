@@ -118,6 +118,7 @@ namespace SkyrimOutfit
             ConfigureToolsPages();
             ConfigurePoses();
             ConfigureDressUp();
+            ConfigureModManager();
 
             vortexPath.TextChanged += PathsChanged;
             bodyPath.TextChanged += PathsChanged;
@@ -196,6 +197,11 @@ namespace SkyrimOutfit
 
         private void PathsChanged(object sender, TextChangedEventArgs args)
         {
+            InvalidatePaths();
+        }
+
+        private void InvalidatePaths()
+        {
             catalog = null;
             installed = null;
             installedCheck++;
@@ -212,9 +218,17 @@ namespace SkyrimOutfit
         private async Task Scan()
         {
             string staging = vortexPath.Text.Trim().Trim('"'), body = bodyPath.Text.Trim().Trim('"');
+            string mo2Ini = UseModOrganizer ? Find<TextBox>("Mo2Ini").Text.Trim().Trim('"') : null;
             await RunBusy(T("Scanning BodySlide projects and official Skyrim archives…", "Scansione di BodySlide e degli archivi ufficiali…"), async () => {
-                var result = await Task.Run(() => Catalog.Scan(staging, body));
+                if (mo2Ini != null && !File.Exists(mo2Ini))
+                    throw new FileNotFoundException(T("Select the instance’s ModOrganizer.ini in Settings.",
+                        "Seleziona il file ModOrganizer.ini dell’istanza nelle impostazioni."));
+                if (mo2Ini != null && !ModOrganizerProfile.IsVirtualized())
+                    throw new InvalidOperationException(T("Launch Trousse with Run in Mod Organizer 2 to see the profile’s virtual Data folder.",
+                        "Avvia Trousse con Esegui in Mod Organizer 2 per accedere alla cartella Data virtuale del profilo."));
+                var result = await Task.Run(() => Catalog.Scan(staging, body, mo2Ini == null ? null : ModOrganizerProfile.Read(mo2Ini)));
                 catalog = result;
+                RefreshGameBadges();
                 ResetPoseRig();
                 installed = null;
                 installedCheck++;
@@ -233,7 +247,8 @@ namespace SkyrimOutfit
                 RefreshTargetInfo();
                 RefreshLive();
                 SavePreferences();
-                SetStatus(modGroups.Length + T(" mods · ", " mod · ") + result.Pieces.Count + T(" BodySlide parts · ", " pezzi BodySlide · ") +
+                SetStatus((result.Organizer == null ? "" : "MO2 · " + result.Organizer.Name + " · ") +
+                    modGroups.Length + T(" mods · ", " mod · ") + result.Pieces.Count + T(" BodySlide parts · ", " pezzi BodySlide · ") +
                     result.Targets.Count + T(" official meshes", " mesh ufficiali"));
             });
         }
@@ -303,7 +318,8 @@ namespace SkyrimOutfit
         {
             foreach (var button in buttons.Values) button.IsEnabled = !busy;
             foreach (var field in new Control[] { vortexPath, bodyPath, pieceSearch, targetSearch, outfitName, packName,
-                modList, sourceList, targetList, draftList, packList, language, targetCategory, autoScan, femaleOnly })
+                modList, sourceList, targetList, draftList, packList, language, targetCategory, autoScan, femaleOnly,
+                Find<ComboBox>("ModManager"), Find<TextBox>("Mo2Ini") })
                 field.IsEnabled = !busy;
             UpdateModestyAvailability();
             UpdateInstalledButtons();
@@ -596,7 +612,7 @@ namespace SkyrimOutfit
         private async Task Export()
         {
             PlayExportSound();
-            var picker = new SaveFileDialog { Filter = "Vortex ZIP (*.zip)|*.zip", FileName = Files.FileLabel(packName.Text) + ".zip", AddExtension = true };
+            var picker = new SaveFileDialog { Filter = "Mod ZIP (*.zip)|*.zip", FileName = Files.FileLabel(packName.Text) + ".zip", AddExtension = true };
             if (picker.ShowDialog(window) != true) return;
             await RunBusy(T("Preparing package…", "Preparazione del pacchetto…"), async () => {
                 ClearPackageConflict();

@@ -67,8 +67,10 @@ namespace SkyrimOutfit
                 "PackageHeading|Replacer package|Pacchetto replacer", "PackNameLabel|Package name|Nome pacchetto",
                 "EditOutfit|Edit outfit|Modifica outfit", "RemoveOutfit|Remove outfit|Rimuovi outfit",
                 "ExportOdt|Save outfit report…|Salva riepilogo ODT…",
-                "Export|Export Vortex ZIP|Esporta ZIP per Vortex", "OpenPack|Open project|Apri progetto", "SavePack|Save project|Salva progetto",
+                "Export|Export mod ZIP|Esporta ZIP mod", "OpenPack|Open project|Apri progetto", "SavePack|Save project|Salva progetto",
                 "SettingsHeading|Settings|Impostazioni", "VortexLabel|Vortex staging folder|Cartella staging di Vortex",
+                "ManagerLabel|Mod manager|Gestore delle mod", "Mo2Label|MO2 instance configuration|Configurazione dell’istanza MO2",
+                "BrowseMo2|Browse|Sfoglia",
                 "BodyLabel|BodySlide folder|Cartella BodySlide", "BrowseVortex|Browse|Sfoglia", "BrowseBody|Browse|Sfoglia",
                 "LanguageLabel|Language|Lingua", "AutoScan|Scan at startup|Scansiona all’avvio",
                 "BadgeEditionLabel|Edition badge|Logo edizione",
@@ -91,23 +93,23 @@ namespace SkyrimOutfit
                 else ((TextBlock)control).Text = label;
             }
             Find<TextBlock>("GuideText").Text = T(
-                "1. Scan the library\nIn Settings, select your Vortex staging folder and your BodySlide folder. Trousse uses existing BodySlide projects.\n\n" +
+                "1. Scan the library\nIn Settings, select your mod manager. In Vortex mode, choose the staging and BodySlide folders. In Mod Organizer 2 mode, select the instance’s ModOrganizer.ini and start Trousse with Run in MO2. Enable BodySlide and your source mods in the active profile before scanning.\n\n" +
                 "2. Mix parts\nSelect a mod, then double-click a part or select several and add them. The live preview uses the original meshes and textures. Disable textures in Settings to give each part a distinct color. Drag to rotate and scroll to zoom. Inspect part shows one selected piece. Open in BodySlide gives you the assembled project and preset controls.\n\n" +
                 "3. Pick the game item\nSearch official Skyrim and DLC equipment by BodySlide name, console ID, Editor ID or outfit group. In Variants and records, choose specific colors and any records that share their Armor Addon. Trousse generates a Variants ESP and a separate BodySlide output for those choices. Enable the ESP in Vortex and build the outfit in BodySlide.\n\n" +
                 "4. Preview bodies and presets\nIn Bodies, select a CBBE project and preset. Trousse builds both weights in the background the first time and reuses the cached previews after restarting. Use project defaults clears the preset. Drag to rotate and scroll to zoom. Choose your preset again when building an outfit for the game.\n\n" +
                 "5. Set modesty for packaged outfits\nAdd an outfit to the package, open KID and select it. Enable its custom rule and choose which parts the character should cover with animation. For Iron Armor with upper-body cover only, check Cover upper body and clear Cover lower body. Select the affected game items. The outfit ZIP includes an INI for all-race rules and an OAR patch for rules specific to a race. Save KID also exports the all-race rules separately.\n\n" +
                 "6. Edit OAR and animation mods\nGeneral settings writes the OAR INI for all races. Select an animation mod, then choose a race to enable or disable a submod for that race. In Dynamic Feminine Female Modesty Animations, choose the player or NPC profile and use Main switches for modesty and detection. Use default follows the mod’s general setting. Export mod patch saves the edited user.json files in a Vortex ZIP. Deploy the patch after its source mods and before exporting any race-specific KID outfit rules.\n\n" +
                 "7. Preview poses and manage favorites\nIn Poses, choose 3D preview to apply a compatible human HKX to the CBBE body, preset and weight chosen in Bodies. In 3D mode, selecting another pose updates the model. Use the timeline to scrub longer clips and Gallery to see the pack images. If a file needs BodySlide, use Open in BodySlide, then Animation → Load HKX… and paste the copied path. Save Favorites.json in PoserData and deploy again if you saved in Vortex staging.\n\n" +
-                "8. Export and verify outfits\nSave outfit report creates an ODT listing the game items, source mods and parts. The Vortex ZIP includes the report and declares requirements with a Nexus ID. Check required_mods.txt for sources Vortex cannot identify. Install and deploy the ZIP, then build the projects in BodySlide. In Installed outfit, filter by category and view. Copy console command prepares player.additem. Select the racial view to inspect meshes for Unique Bodies by Race.\n\n" +
+                "8. Export and verify outfits\nThe mod ZIP includes an ODT with the game items, source mods and parts. See required_mods.txt for dependencies. Install the ZIP with your mod manager. In MO2, enable the package and run BodySlide from MO2. Keep its built meshes in an enabled output mod or Overwrite. In Vortex, deploy the package before building. Installed outfit shows the meshes visible to the current profile.\n\n" +
                 "9. Make a Dress Up Lovers profile\nSelect a profile slot and create an outfit with the name that should appear in Skyrim. Add items from the equipment list or use Use in Dress Up on a BodySlide part or a game item in Compose. For a mashup that replaces a game item's mesh, add the destination item. Use Save to Skyrim or place the exported JSON in Data\\SKSE\\Plugins\\DressUpLovers\\User. In the Dress Up Lovers MCM, choose Backup Custom Outfits, the same profile slot, then Import profile. Import replaces the current custom outfits. Export your existing outfit profile in the MCM first to edit or keep those outfits. The game's editor can drop weapons when rebuilding a saved outfit.",
-                "1. Scansiona la libreria\nNelle impostazioni, seleziona le cartelle di Vortex e BodySlide. Trousse usa i progetti BodySlide esistenti.\n\n" +
+                "1. Scansiona la libreria\nNelle impostazioni, scegli il gestore delle mod. Per Vortex seleziona le cartelle di staging e BodySlide. Per Mod Organizer 2 seleziona il file ModOrganizer.ini dell’istanza e avvia Trousse con Esegui in MO2. Attiva BodySlide e le mod sorgenti nel profilo prima di scansionare.\n\n" +
                 "2. Unisci i pezzi\nSeleziona una mod e aggiungi i pezzi con doppio clic o selezione multipla. L’anteprima dal vivo usa le mesh e le texture originali. Disattiva le texture nelle impostazioni per distinguere i pezzi con colori diversi. Trascina per ruotare e usa la rotella per lo zoom. Vedi pezzo mostra il singolo componente. Apri in BodySlide mostra il progetto assemblato e i preset.\n\n" +
                 "3. Scegli il capo del gioco\nCerca l’equipaggiamento ufficiale di Skyrim e dei DLC per nome BodySlide, ID console, Editor ID o gruppo. In Varianti e record puoi selezionare un colore e i record che condividono il suo Armor Addon. Trousse genera un ESP Variants e un output BodySlide separato. Attiva l’ESP in Vortex e costruisci il vestito in BodySlide.\n\n" +
                 "4. Guarda corpi e preset\nIn Corpi, scegli un progetto CBBE e un preset. Trousse costruisce entrambi i pesi in background al primo utilizzo e riusa le anteprime salvate anche dopo il riavvio. Usa valori del progetto rimuove il preset. Trascina per ruotare e usa la rotella per lo zoom. Scegli di nuovo il preset quando costruisci l’outfit per il gioco.\n\n" +
                 "5. Imposta la modestia degli outfit nel pacchetto\nAggiungi un outfit al pacchetto, apri KID e selezionalo. Attiva la regola personalizzata e scegli quali parti il personaggio deve coprire con l’animazione. Per Iron Armor, con modestia solo sopra, spunta Copri sopra e lascia Copri sotto deselezionato. Seleziona i capi del gioco interessati. Lo ZIP degli outfit include l’INI per tutte le razze e la patch OAR per le regole specifiche. Salva KID esporta a parte le regole per tutte le razze.\n\n" +
                 "6. Modifica OAR e le mod di animazione\nLe impostazioni generali scrivono l’INI di OAR, valido per tutte le razze. Seleziona una mod di animazione e poi una razza per attivare o disattivare un sottomod per quella razza. In Dynamic Feminine Female Modesty Animations, scegli il profilo PG o PNG e usa Interruttori principali per modestia e rilevamento. Usa il predefinito segue l’impostazione generale della mod. Esporta patch mod salva i file user.json in uno ZIP. Distribuisci la patch dopo le mod sorgenti e prima di esportare eventuali regole KID per razza degli outfit.\n\n" +
                 "7. Visualizza le pose e gestisci i preferiti\nIn Pose, scegli Anteprima 3D per applicare un HKX umano compatibile al corpo CBBE, al preset e al peso scelti in Corpi. In modalità 3D il modello si aggiorna quando cambi posa. Usa la barra temporale per i clip più lunghi e Galleria per le immagini del pacchetto. Se un file richiede BodySlide, usa Apri in BodySlide e poi Animation → Load HKX… e incolla il percorso copiato. Salva Favorites.json in PoserData. Se salvi nello staging, ripeti il deploy in Vortex.\n\n" +
-                "8. Esporta e controlla gli outfit\nSalva riepilogo ODT crea un documento con i capi del gioco, le mod sorgenti e i loro pezzi. Lo ZIP include il documento e dichiara a Vortex le dipendenze con ID Nexus. Controlla required_mods.txt per le sorgenti che Vortex non può identificare. Installa lo ZIP, fai il deploy e costruisci i progetti in BodySlide. In Outfit installato puoi filtrare per categoria e vista. Copia comando console prepara player.additem. Usa la vista per razza per controllare le mesh di Unique Bodies by Race.\n\n" +
+                "8. Esporta e controlla gli outfit\nLo ZIP della mod include un ODT con i capi del gioco, le mod sorgenti e i pezzi. Consulta required_mods.txt per le dipendenze. Installa lo ZIP con il tuo gestore di mod. In MO2 abilita il pacchetto e avvia BodySlide da MO2. Conserva le mesh in una mod di output abilitata o in Overwrite. In Vortex fai il deploy prima della build. Outfit installato mostra le mesh visibili al profilo corrente.\n\n" +
                 "9. Crea un profilo Dress Up Lovers\nScegli uno slot del profilo e crea un outfit con il nome che vuoi vedere in Skyrim. Aggiungi i capi dalla lista dell’equipaggiamento oppure usa Usa in Dress Up su un pezzo BodySlide o un capo del gioco in Componi. Per un mashup che sostituisce una mesh del gioco, aggiungi il capo di destinazione. Usa Salva in Skyrim oppure copia il JSON in Data\\SKSE\\Plugins\\DressUpLovers\\User. Nel menu MCM di Dress Up Lovers scegli Backup Custom Outfits, lo stesso slot e Import profile. L’importazione sostituisce gli outfit personalizzati attuali. Se vuoi conservare o modificare gli outfit esistenti, esporta prima il profilo dal MCM. L’editor del gioco può rimuovere le armi quando ricostruisce un outfit.");
             if (!projectDirty && pack.Outfits.Count == 0)
             {
@@ -141,6 +143,7 @@ namespace SkyrimOutfit
             badge.SelectedIndex = badgeIndex;
             updating = false;
             RefreshGameBadges();
+            RefreshModManager();
             if (window.IsLoaded) SavePreferences();
         }
 
@@ -165,7 +168,7 @@ namespace SkyrimOutfit
                 .Replace("Fusione in Outfit Studio", "Composing in Outfit Studio")
                 .Replace("Verifica del progetto e delle partizioni", "Checking project and partitions")
                 .Replace("Build di prova in BodySlide…", "Test build in BodySlide…")
-                .Replace("Creazione dello ZIP per Vortex…", "Creating Vortex ZIP…")
+                .Replace("Creazione dello ZIP della mod…", "Creating mod ZIP…")
                 .Replace("Anteprima aperta in BodySlide. Chiudila per tornare alla composizione.", "Preview opened in BodySlide. Close it to continue composing.");
         }
 
@@ -300,6 +303,8 @@ namespace SkyrimOutfit
         {
             settings.Staging = vortexPath.Text.Trim();
             settings.Body = bodyPath.Text.Trim();
+            settings.UseMo2 = UseModOrganizer;
+            settings.Mo2Ini = Find<TextBox>("Mo2Ini").Text.Trim();
             settings.Italian = italian;
             settings.AutoScan = autoScan.IsChecked == true;
             settings.Female = femaleOnly.IsChecked == true;
@@ -315,6 +320,8 @@ namespace SkyrimOutfit
     {
         [DataMember] public string Staging = "";
         [DataMember] public string Body = "";
+        [DataMember] public bool UseMo2;
+        [DataMember] public string Mo2Ini;
         [DataMember] public bool Italian, AutoScan = true, Female = true;
         [DataMember] public bool TexturedPreview = true, MusicEnabled = true, EffectsEnabled = true;
         [DataMember] public string MusicFile;
@@ -378,7 +385,7 @@ namespace SkyrimOutfit
 
         internal static bool HasBodySlide(string directory)
         {
-            return Directory.Exists(directory) && File.Exists(Path.Combine(directory, "OutfitStudio.exe"));
+            return Directory.Exists(directory) && File.Exists(Catalog.BodySlideExecutable(directory, "OutfitStudio"));
         }
 
         internal void Save()

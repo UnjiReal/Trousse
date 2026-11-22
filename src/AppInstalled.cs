@@ -79,7 +79,6 @@ namespace SkyrimOutfit
             int check = ++installedCheck;
             Catalog scanned = catalog;
             var previous = installedList.SelectedItem as InstalledChoice;
-            string staging = vortexPath.Text.Trim().Trim('"');
             installed = null;
             UpdateRaceChoice();
             RefreshInstalledList();
@@ -89,7 +88,7 @@ namespace SkyrimOutfit
             try
             {
                 string data = scanned.DataRoot;
-                var found = await Task.Run(() => new InstalledOutfits(staging, data, InstalledOutfits.PluginListPath(data), scanned.BodyRoot));
+                var found = await Task.Run(() => new InstalledOutfits(scanned.StagingRoot, data, scanned.PluginList, scanned.BodyRoot, scanned.Organizer));
                 if (check != installedCheck) return;
                 installed = found;
                 installedViewport.ResetTextureCache();
@@ -124,7 +123,10 @@ namespace SkyrimOutfit
                         message = T("Racial files found in Data. The plugin was not listed as active.", "File per razza presenti in Data. Il plugin non risulta attivo nell’elenco del profilo.");
                         break;
                     case RaceInstallation.Staged:
-                        message = T("Mod found in Vortex. Deploy it and enable its plugin.", "Mod trovata in Vortex. Fai il deploy e attiva il plugin.");
+                        message = UseModOrganizer ?
+                            T("Mod found in MO2. Enable it and its plugin in the active profile.",
+                                "Mod trovata in MO2. Abilitala insieme al plugin nel profilo attivo.") :
+                            T("Mod found in Vortex. Deploy it and enable its plugin.", "Mod trovata in Vortex. Fai il deploy e attiva il plugin.");
                         break;
                     default:
                         message = T("Unique Bodies by Race was not detected.", "Unique Bodies by Race non rilevato.");
@@ -271,7 +273,8 @@ namespace SkyrimOutfit
             if (source.Components.Length != 0)
                 lines.Add(T("Components · ", "Componenti · ") + String.Join(" · ", source.Components));
             if (source.DeployedBy != null)
-                lines.Add(T("Deployed by Vortex from · ", "Mod distribuita da Vortex · ") + source.DeployedBy);
+                lines.Add((UseModOrganizer ? T("Active MO2 source · ", "Origine attiva in MO2 · ") :
+                    T("Deployed by Vortex from · ", "Mod distribuita da Vortex · ")) + source.DeployedBy);
             return String.Join(Environment.NewLine, lines);
         }
 

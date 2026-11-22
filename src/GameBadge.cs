@@ -69,7 +69,8 @@ namespace SkyrimOutfit
             try
             {
                 string body = bodyPath.Text.Trim().Trim('"');
-                if (Directory.Exists(body)) game = Directory.GetParent(Catalog.GameData(body).TrimEnd('\\', '/')).FullName;
+                if (catalog != null) game = Directory.GetParent(catalog.DataRoot.TrimEnd('\\', '/')).FullName;
+                else if (!UseModOrganizer && Directory.Exists(body)) game = Directory.GetParent(Catalog.GameData(body).TrimEnd('\\', '/')).FullName;
             }
             catch (IOException) { }
             catch (System.Xml.XmlException) { }

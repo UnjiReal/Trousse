@@ -459,7 +459,7 @@
           <DockPanel Grid.Row="3" Margin="0,8,0,0" LastChildFill="False">
             <Button x:Name="EditOutfit" Content="Edit outfit" Margin="0,0,6,0"/>
             <Button x:Name="RemoveOutfit" Content="Remove outfit"/>
-            <Button x:Name="Export" DockPanel.Dock="Right" Content="Export Vortex ZIP" Style="{StaticResource Accent}"/>
+            <Button x:Name="Export" DockPanel.Dock="Right" Content="Export mod ZIP" Style="{StaticResource Accent}"/>
             <Button x:Name="ExportOdt" DockPanel.Dock="Right" Content="Save outfit report…" Margin="0,0,8,0"/>
           </DockPanel>
         </Grid>
@@ -795,16 +795,32 @@
         <StackPanel MaxWidth="830" HorizontalAlignment="Left">
           <TextBlock x:Name="SettingsHeading" Text="Settings" Style="{StaticResource Heading}" Margin="0,0,0,4"/>
           <TextBlock x:Name="AppVersionLabel" Style="{StaticResource Muted}" Margin="0,0,0,14"/>
-          <TextBlock x:Name="VortexLabel" Text="Vortex staging folder" Margin="0,0,0,5"/>
           <DockPanel Margin="0,0,0,12">
-            <Button x:Name="BrowseVortex" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
-            <TextBox x:Name="VortexPath" MinWidth="570"/>
+            <TextBlock x:Name="ManagerLabel" Text="Mod manager" Width="130"/>
+            <ComboBox x:Name="ModManager" Width="190" HorizontalAlignment="Left">
+              <ComboBoxItem Content="Vortex"/><ComboBoxItem Content="Mod Organizer 2"/>
+            </ComboBox>
           </DockPanel>
-          <TextBlock x:Name="BodyLabel" Text="BodySlide folder" Margin="0,0,0,5"/>
-          <DockPanel Margin="0,0,0,12">
-            <Button x:Name="BrowseBody" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
-            <TextBox x:Name="BodyPath" MinWidth="570"/>
-          </DockPanel>
+          <StackPanel x:Name="VortexPaths">
+            <TextBlock x:Name="VortexLabel" Text="Vortex staging folder" Margin="0,0,0,5"/>
+            <DockPanel Margin="0,0,0,12">
+              <Button x:Name="BrowseVortex" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
+              <TextBox x:Name="VortexPath" MinWidth="570"/>
+            </DockPanel>
+            <TextBlock x:Name="BodyLabel" Text="BodySlide folder" Margin="0,0,0,5"/>
+            <DockPanel Margin="0,0,0,12">
+              <Button x:Name="BrowseBody" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
+              <TextBox x:Name="BodyPath" MinWidth="570"/>
+            </DockPanel>
+          </StackPanel>
+          <StackPanel x:Name="Mo2Paths" Visibility="Collapsed" Margin="0,0,0,12">
+            <TextBlock x:Name="Mo2Label" Text="MO2 instance configuration" Margin="0,0,0,5"/>
+            <DockPanel Margin="0,0,0,6">
+              <Button x:Name="BrowseMo2" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
+              <TextBox x:Name="Mo2Ini" MinWidth="570"/>
+            </DockPanel>
+            <TextBlock x:Name="Mo2Hint" Style="{StaticResource Muted}" TextWrapping="Wrap"/>
+          </StackPanel>
           <DockPanel Margin="0,0,0,12">
             <TextBlock x:Name="LanguageLabel" Text="Language" Width="130"/>
             <ComboBox x:Name="Language" Width="190" HorizontalAlignment="Left" SelectedIndex="0">

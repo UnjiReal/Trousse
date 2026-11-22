@@ -186,13 +186,24 @@ namespace SkyrimOutfit
         internal readonly Dictionary<string, Piece> ById = new Dictionary<string, Piece>(Files.Comparer);
         internal readonly Dictionary<string, Target> ByTarget = new Dictionary<string, Target>(Files.Comparer);
         internal readonly string BodyRoot, DataRoot, StagingRoot;
+        internal readonly ModOrganizerProfile Organizer;
         private readonly HashSet<string> stagingProjects = new HashSet<string>(Files.Comparer);
 
-        Catalog(string bodyRoot, string dataRoot, string stagingRoot)
+        Catalog(string bodyRoot, string dataRoot, string stagingRoot, ModOrganizerProfile organizer)
         {
             BodyRoot = bodyRoot;
             DataRoot = dataRoot;
             StagingRoot = stagingRoot;
+            Organizer = organizer;
+        }
+
+        internal string PluginList { get { return Organizer == null ? InstalledOutfits.PluginListPath(DataRoot) : Organizer.PluginList; } }
+
+        internal static string BodySlideExecutable(string bodyRoot, string name)
+        {
+            string standard = Path.Combine(bodyRoot, name + ".exe");
+            string x64 = Path.Combine(bodyRoot, name + " x64.exe");
+            return File.Exists(standard) ? standard : x64;
         }
 
         internal static string GameData(string bodyRoot)
@@ -211,14 +222,21 @@ namespace SkyrimOutfit
             throw new DirectoryNotFoundException("Configura prima il percorso Data di Skyrim SE in BodySlide.");
         }
 
-        internal static Catalog Scan(string staging, string bodyRoot)
+        internal static Catalog Scan(string staging, string bodyRoot, ModOrganizerProfile organizer = null)
         {
+            if (organizer != null)
+            {
+                staging = organizer.Mods;
+                bodyRoot = Path.Combine(organizer.Data, @"CalienteTools\BodySlide");
+            }
             staging = Path.GetFullPath(staging);
             bodyRoot = Path.GetFullPath(bodyRoot);
-            if (!Directory.Exists(staging)) throw new DirectoryNotFoundException("Cartella Vortex Mods non trovata.");
-            if (!File.Exists(Path.Combine(bodyRoot, "OutfitStudio.exe")))
-                throw new FileNotFoundException("Scegli la cartella di BodySlide che contiene OutfitStudio.exe.");
-            var catalog = new Catalog(bodyRoot, GameData(bodyRoot), staging);
+            if (!Directory.Exists(staging)) throw new DirectoryNotFoundException("Mod folder not found: " + staging);
+            if (!File.Exists(BodySlideExecutable(bodyRoot, "OutfitStudio")))
+                throw new FileNotFoundException(organizer == null ?
+                    "Choose the BodySlide folder containing Outfit Studio." :
+                    "Enable BodySlide and Outfit Studio in the selected MO2 profile and launch Trousse through MO2.");
+            var catalog = new Catalog(bodyRoot, organizer == null ? GameData(bodyRoot) : organizer.Data, staging, organizer);
             var vanilla = new HashSet<string>(Files.Comparer);
             foreach (string archive in Files.Children(catalog.DataRoot, "Skyrim - Meshes*.bsa", false))
             {
@@ -229,7 +247,8 @@ namespace SkyrimOutfit
                 catalog.Notices.Add("The official Skyrim mesh archives could not be read.");
             var records = GameRecords.Read(catalog.DataRoot, catalog.Notices);
 
-            foreach (string mod in Files.Children(staging, "*", true))
+            var mods = organizer == null ? Files.Children(staging, "*", true) : organizer.EnabledMods;
+            foreach (string mod in mods)
                 foreach (string root in ModBodyRoots(mod))
                 {
                     catalog.ReadProjects(root, mod, false);
@@ -347,7 +366,12 @@ namespace SkyrimOutfit
                         string weights = (string)output.Attribute("GenWeights");
                         string folderName = deployed ? null : Path.GetFileName(mod);
                         string modName, nexusId;
-                        GetModIdentity(folderName, out modName, out nexusId);
+                        if (Organizer != null && mod != null)
+                        {
+                            modName = folderName;
+                            nexusId = ModOrganizerProfile.NexusId(mod);
+                        }
+                        else GetModIdentity(folderName, out modName, out nexusId);
                         var piece = new Piece {
                             Id = id, Mod = deployed ? "Skyrim Data" : modName,
                             ModFolder = mod, NexusId = nexusId,

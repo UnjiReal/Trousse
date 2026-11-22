@@ -39,11 +39,14 @@ namespace SkyrimOutfit
         private readonly Dictionary<string, DeploymentFile> deployment;
         private readonly ILookup<string, Build> builds;
         private readonly string staging;
+        private readonly ModOrganizerProfile organizer;
 
-        internal OutfitProvenance(string staging, string data, string body)
+        internal OutfitProvenance(string staging, string data, string body, ModOrganizerProfile organizer = null)
         {
             this.staging = staging;
-            deployment = ReadDeployment(Path.Combine(data, "vortex.deployment.json"));
+            this.organizer = organizer;
+            deployment = organizer == null ? ReadDeployment(Path.Combine(data, "vortex.deployment.json")) :
+                new Dictionary<string, DeploymentFile>(Files.Comparer);
             builds = body == null ? Enumerable.Empty<Build>().ToLookup(build => build.Mesh, Files.Comparer)
                 : ReadBuilds(Path.Combine(body, "Log_BS.txt")).ToLookup(build => build.Mesh, Files.Comparer);
         }
@@ -147,6 +150,16 @@ namespace SkyrimOutfit
         private string DeploymentOwner(InstalledMesh mesh)
         {
             string file = mesh.Archive == null ? mesh.Relative : Path.GetFileName(mesh.Archive);
+            if (organizer != null)
+            {
+                try
+                {
+                    string mod = organizer.ModFor(file);
+                    return mod != null && SameFile(mesh.Path ?? mesh.Archive, Files.PathIn(mod, file)) ? Path.GetFileName(mod) : null;
+                }
+                catch (IOException) { return null; }
+                catch (UnauthorizedAccessException) { return null; }
+            }
             DeploymentFile entry;
             if (!deployment.TryGetValue(file, out entry)) return null;
             if (mesh.Path != null)

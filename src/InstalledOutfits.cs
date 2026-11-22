@@ -24,10 +24,11 @@ namespace SkyrimOutfit
         internal bool CanPreviewRace { get { return racial != null; } }
         internal readonly OutfitProvenance Provenance;
 
-        internal InstalledOutfits(string staging, string data, string pluginList, string bodyRoot = null)
+        internal InstalledOutfits(string staging, string data, string pluginList, string bodyRoot = null,
+            ModOrganizerProfile organizer = null)
         {
             DataRoot = data;
-            string[] enabled = ReadEnabled(pluginList);
+            string[] enabled = ReadEnabled(pluginList, organizer != null);
             var plugins = Files.Children(data, "*", false).Select(Path.GetFileName)
                 .Where(file => PluginName.IsMatch(file) && UniqueBodies.IsMatch(file)).ToArray();
             var active = enabled == null ? new string[0] : enabled.Where(file => plugins.Contains(file, Files.Comparer)).ToArray();
@@ -53,7 +54,7 @@ namespace SkyrimOutfit
             meshArchives = pluginsForArchives.SelectMany(plugin => archives.Where(file => BelongsTo(file, plugin)))
                 .Concat(archives.Where(file => Path.GetFileName(file).StartsWith("Skyrim - Meshes", StringComparison.OrdinalIgnoreCase))
                     .OrderByDescending(file => file, Files.Comparer)).Distinct(Files.Comparer).ToArray();
-            Provenance = new OutfitProvenance(staging, data, bodyRoot);
+            Provenance = new OutfitProvenance(staging, data, bodyRoot, organizer);
         }
 
         internal static string PluginListPath(string dataRoot)
@@ -66,13 +67,13 @@ namespace SkyrimOutfit
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), profile, "plugins.txt");
         }
 
-        internal static string[] ReadEnabled(string path)
+        internal static string[] ReadEnabled(string path, bool allowEmpty = false)
         {
             try
             {
                 string[] plugins = File.ReadLines(path).Select(line => line.Trim().TrimStart('\uFEFF')).Where(line => line.StartsWith("*", StringComparison.Ordinal))
                     .Select(line => line.Substring(1).Trim()).Where(file => PluginName.IsMatch(file)).ToArray();
-                return plugins.Length == 0 ? null : plugins;
+                return plugins.Length == 0 && !allowEmpty ? null : plugins;
             }
             catch (IOException) { return null; }
             catch (UnauthorizedAccessException) { return null; }

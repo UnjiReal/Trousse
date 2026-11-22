@@ -138,7 +138,7 @@ namespace SkyrimOutfit
 
             CopyTree(stage, projectDir);
             CopyTree(Path.Combine(catalog.BodyRoot, "res"), Path.Combine(projectDir, "res"));
-            File.Copy(Path.Combine(catalog.BodyRoot, "BodySlide.exe"), bodySlide);
+            File.Copy(Catalog.BodySlideExecutable(catalog.BodyRoot, "BodySlide"), bodySlide);
             Directory.CreateDirectory(Path.Combine(projectDir, "SliderGroups"));
             new XElement("SliderGroups", new XElement("Group", new XAttribute("name", packId),
                 new XElement("Member", new XAttribute("name", projectName)))).Save(Path.Combine(projectDir, @"SliderGroups\Preview.xml"));
@@ -308,7 +308,7 @@ namespace SkyrimOutfit
 
         internal void Archive(string destination)
         {
-            status("Creazione dello ZIP per Vortex…");
+            status("Creazione dello ZIP della mod…");
             string temporary = destination + "." + Guid.NewGuid().ToString("N") + ".tmp";
             try
             {
@@ -384,7 +384,7 @@ namespace SkyrimOutfit
                 Files.Copy(Files.PathIn(package, job.Physics.Link),
                     Path.Combine(Path.GetDirectoryName(mesh), Path.GetFileName(job.Physics.Link)));
             }
-            Files.Copy(Path.Combine(catalog.BodyRoot, "BodySlide.exe"), bodySlide);
+            Files.Copy(Catalog.BodySlideExecutable(catalog.BodyRoot, "BodySlide"), bodySlide);
             CopyTree(Path.Combine(stage, "res"), Path.Combine(projects, "res"));
             foreach (string folder in new[] { "SliderCategories", "SliderPresets" })
                 CopyTree(Path.Combine(catalog.BodyRoot, folder), Path.Combine(projects, folder));
@@ -398,10 +398,11 @@ namespace SkyrimOutfit
 
         private void PrepareEngine()
         {
-            var version = FileVersionInfo.GetVersionInfo(Path.Combine(catalog.BodyRoot, "OutfitStudio.exe"));
+            string executable = Catalog.BodySlideExecutable(catalog.BodyRoot, "OutfitStudio");
+            var version = FileVersionInfo.GetVersionInfo(executable);
             if (version.FileMajorPart < 6 || (version.FileMajorPart == 6 && version.FileMinorPart < 1))
                 throw new InvalidOperationException("Serve Outfit Studio 6.1.0 o successivo per unire progetti con gli slider.");
-            Files.Copy(Path.Combine(catalog.BodyRoot, "OutfitStudio.exe"), studio);
+            Files.Copy(executable, studio);
             foreach (string folder in new[] { "res", "RefTemplates", "ConversionSets" })
                 CopyTree(Path.Combine(catalog.BodyRoot, folder), Path.Combine(stage, folder));
             foreach (string folder in new[] { "Automations", "SliderSets", "ShapeData", "output" })
@@ -485,7 +486,7 @@ namespace SkyrimOutfit
         {
             yield return piece.ProjectFile;
             yield return piece.FindNif(catalog.BodyRoot);
-            yield return Path.Combine(catalog.BodyRoot, "BodySlide.exe");
+            yield return Catalog.BodySlideExecutable(catalog.BodyRoot, "BodySlide");
             yield return Path.Combine(catalog.BodyRoot, "Config.xml");
             var set = SourceSet(piece);
             var shapes = set.Elements("Shape").ToList();
@@ -601,7 +602,8 @@ namespace SkyrimOutfit
                 .Save(Path.Combine(packageBody, "SliderGroups", packId + ".xml"));
 
             var readme = new StringBuilder().AppendLine(pack.Name.Trim()).AppendLine()
-                .AppendLine("Installa lo ZIP in Vortex e fai Deploy Mods.")
+                .AppendLine(catalog.Organizer == null ? "Install the ZIP in Vortex and deploy it." :
+                    "Install and enable this archive in Mod Organizer 2. Start BodySlide through MO2 and keep the built meshes in an enabled output mod or Overwrite.")
                 .AppendLine("In BodySlide cerca il nome del pacchetto, scegli il preset ed esegui Build.")
                 .AppendLine("Per il Batch Build seleziona il gruppo " + packId + " e scegli questi progetti se compare un conflitto.")
                 .AppendLine("Mantieni disponibili le texture e la fisica delle mod sorgenti e la base corpo usata dagli outfit.")
@@ -611,7 +613,7 @@ namespace SkyrimOutfit
                 readme.AppendLine(job.Name).AppendLine(job.Recipe.Mesh + " · slot " + job.Recipe.Slot);
                 if (job.Recipe.VariantIds != null && job.Recipe.VariantIds.Count > 0)
                     readme.AppendLine("  Variants: " + String.Join(", ", job.Recipe.VariantIds))
-                        .AppendLine("  Enable the generated Variants ESP in Vortex before starting Skyrim.");
+                        .AppendLine("  Enable the generated Variants ESP before starting Skyrim.");
                 foreach (var piece in job.Pieces) readme.AppendLine("  " + piece.Mod + " / " + piece.Name);
                 if (job.Physics.Link != null) readme.AppendLine("  SMP: " + job.Physics.Link);
                 if (job.Physics.IsCombined)
@@ -678,7 +680,7 @@ namespace SkyrimOutfit
                         ConflictArea.Parts, new[] { recipe }, duplicates);
                 foreach (var piece in recipe.Pieces)
                     if (piece == null || !catalog.ById.ContainsKey(piece))
-                        throw new PackageConflict("Componente di " + recipe.Name + " non trovato. Controlla Vortex e il catalogo.",
+                        throw new PackageConflict("Componente di " + recipe.Name + " non trovato. Controlla il gestore delle mod e il catalogo.",
                             ConflictArea.Parts, new[] { recipe }, new[] { piece });
             }
         }

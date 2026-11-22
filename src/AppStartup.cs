@@ -45,10 +45,13 @@ namespace SkyrimOutfit
 
         private async Task PrepareStartup()
         {
-            if (!Directory.Exists(vortexPath.Text) || !Preferences.HasBodySlide(bodyPath.Text))
+            bool ready = UseModOrganizer ? File.Exists(Find<TextBox>("Mo2Ini").Text.Trim().Trim('"')) && ModOrganizerProfile.IsVirtualized()
+                : Directory.Exists(vortexPath.Text) && Preferences.HasBodySlide(bodyPath.Text);
+            if (!ready)
             {
                 Switch("SettingsPage");
-                SetStatus(T("Set your paths in Settings, then scan the library.", "Imposta i percorsi e scansiona la libreria dalle impostazioni."));
+                SetStatus(UseModOrganizer ? ModOrganizerHint() :
+                    T("Set your paths in Settings, then scan the library.", "Imposta i percorsi e scansiona la libreria dalle impostazioni."));
             }
             else if (autoScan.IsChecked == true) await Scan();
             else SetStatus(T("Scan the library from Settings.", "Scansiona la libreria dalle impostazioni."));

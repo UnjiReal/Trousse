@@ -98,9 +98,8 @@ namespace SkyrimOutfit
 
         private string DressDataPath()
         {
-            if (catalog != null) return catalog.DataRoot;
-            string body = bodyPath.Text.Trim().Trim('"');
-            if (Preferences.HasBodySlide(body)) return Catalog.GameData(body);
+            string data = SelectedDataPath();
+            if (data != null || UseModOrganizer) return data;
             string game = Environment.GetEnvironmentVariable("TROUSSE_SKYRIM_PATH");
             return Directory.Exists(game) && Directory.Exists(Path.Combine(game, "Data")) ? Path.Combine(game, "Data") : null;
         }
@@ -123,8 +122,10 @@ namespace SkyrimOutfit
                 if (dressProfile == null) SelectDressProfile(dressSlot);
                 if (data == null || (!force && dressIndex != null)) return;
                 await RunBusy(T("Reading Skyrim equipment records…", "Lettura dei record di equipaggiamento di Skyrim…"), async () => {
+                    var scanned = catalog;
                     dressIndex = await Task.Run(() => GameRecords.ReadDressUpEquipment(data,
-                        InstalledOutfits.ReadEnabled(InstalledOutfits.PluginListPath(data))));
+                        InstalledOutfits.ReadEnabled(scanned == null ? InstalledOutfits.PluginListPath(data) : scanned.PluginList,
+                            scanned != null && scanned.Organizer != null)));
                     RefreshDressLibrary();
                     RefreshDressOutfit();
                     SetStatus(T("Dress Up Lovers equipment loaded", "Equipaggiamento Dress Up Lovers caricato"));
@@ -237,8 +238,8 @@ namespace SkyrimOutfit
                 !dressIndex.ModDeployed ? T("Dress Up Lovers is missing from Skyrim Data.", "Dress Up Lovers non è presente nella cartella Data di Skyrim.") :
                 !dressIndex.LoadOrderVerified ? T("Using deployed plugins. The active load order could not be verified.",
                     "Sono mostrati i plugin distribuiti. Non è stato possibile verificare l’ordine di caricamento attivo.") :
-                !dressIndex.ModEnabled ? T("Enable Dress Up Lovers in Vortex before importing the profile.",
-                    "Attiva Dress Up Lovers in Vortex prima di importare il profilo.") :
+                !dressIndex.ModEnabled ? T("Enable Dress Up Lovers in the active profile before importing.",
+                    "Attiva Dress Up Lovers nel profilo attivo prima di importare.") :
                 T("Dress Up Lovers detected", "Dress Up Lovers rilevato");
             info.ToolTip = dressIndex == null || dressIndex.Notices.Count == 0 ? null : String.Join(Environment.NewLine, dressIndex.Notices.Take(10));
             Find<TextBlock>("DressImportHint").Text = DressUpProfile.FileName(dressSlot) + " · " +

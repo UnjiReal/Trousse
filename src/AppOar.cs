@@ -51,9 +51,7 @@ namespace SkyrimOutfit
         {
             try
             {
-                string data = catalog == null ? null : catalog.DataRoot;
-                string body = bodyPath.Text.Trim().Trim('"');
-                if (data == null && Preferences.HasBodySlide(body)) data = Catalog.GameData(body);
+                string data = SelectedDataPath();
                 if (indexedOar && !reload && Files.Comparer.Equals(oarData, data)) return;
                 if (indexedOar && !reload && !CanReplaceOar()) return;
                 await RunBusy(T("Reading OAR configurations…", "Lettura configurazioni OAR…"), async () => {
@@ -154,7 +152,7 @@ namespace SkyrimOutfit
             {
                 oarFields = (module.Documents ?? new OarDocument[0]).Where(item => item.ToggleName != null)
                     .SelectMany(item => item.Fields(italian).Where(field => field.Kind == "Flag").Take(1)).ToArray();
-                file = T("Turn features on or off, then export a Vortex patch.", "Attiva o disattiva le funzioni, poi esporta una patch Vortex.");
+                file = T("Turn features on or off, then export a mod patch.", "Attiva o disattiva le funzioni, poi esporta una patch.");
                 detail = module.Folder;
             }
             else
@@ -264,10 +262,10 @@ namespace SkyrimOutfit
                     SetStatus(T("Change an OAR mod setting before exporting.", "Modifica un’impostazione della mod OAR prima di esportare."));
                     return;
                 }
-                var archive = new SaveFileDialog { FileName = "Trousse-OAR-settings.zip", Filter = "Vortex ZIP (*.zip)|*.zip", DefaultExt = ".zip" };
+                var archive = new SaveFileDialog { FileName = "Trousse-OAR-settings.zip", Filter = "Mod ZIP (*.zip)|*.zip", DefaultExt = ".zip" };
                 if (archive.ShowDialog(window) != true) return;
                 OarModule.Export(archive.FileName, oarData, oarModules);
-                SetStatus(T("OAR patch saved. Install the ZIP in Vortex.", "Patch OAR salvata. Installa lo ZIP in Vortex."));
+                SetStatus(T("OAR patch saved. Install the ZIP with your mod manager.", "Patch OAR salvata. Installa lo ZIP con il gestore delle mod."));
                 return;
             }
             var ini = module == null ? oar : module.Settings;

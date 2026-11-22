@@ -112,7 +112,7 @@ namespace SkyrimOutfit
             else if (modestyEnabled.IsChecked == true && kidRecords.SelectedItems.Count == 0)
                 message = T("Select at least one game item before exporting.", "Seleziona almeno un capo del gioco prima di esportare.");
             else if (modestyEnabled.IsChecked == true && modestyRaces.SelectedIndex > 0)
-                message = T("This race uses the OAR patch included in the Vortex ZIP.", "Per questa razza viene usata la patch OAR inclusa nello ZIP per Vortex.");
+                message = T("This race uses the OAR patch included in the mod ZIP.", "Per questa razza viene usata la patch OAR inclusa nello ZIP della mod.");
             Find<TextBlock>("KidAnimationHint").Text = message;
         }
 

@@ -80,7 +80,7 @@ namespace SkyrimOutfit
                 lines.Add("; " + rule.Item.EditorId);
                 if (String.IsNullOrEmpty(rule.Race))
                     lines.AddRange(rule.Keywords.Select(keyword => "Keyword = " + keyword + "|Armor|" + rule.Item.RuleId));
-                else lines.Add("; Race " + rule.Race + " / " + rule.Item.RuleId + " / " + rule.Keyword + " is handled by the OAR files in the Vortex ZIP.");
+                else lines.Add("; Race " + rule.Race + " / " + rule.Item.RuleId + " / " + rule.Keyword + " is handled by the OAR files in the mod ZIP.");
                 lines.Add("");
             }
             File.WriteAllLines(path, lines, Encoding.ASCII);

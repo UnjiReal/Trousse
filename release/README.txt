@@ -1,11 +1,25 @@
 Trousse | Outfit composer for Skyrim Special Edition and Anniversary Edition
 
 Requirements
-64-bit Windows, a Skyrim SE or AE installation managed by Vortex, and
-BodySlide and Outfit Studio 6.1.0 or later. Deploy your BodySlide mod and
-the outfit mods you want to use before scanning the library.
+64-bit Windows, Skyrim SE or AE, Vortex or Mod Organizer 2, and BodySlide
+and Outfit Studio 6.1.0 or later. Enable BodySlide and the outfit mods
+you want to use before scanning the library.
 
-Portable ZIP (Windows-x64)
+Mod Organizer 2
+1. Add Trousse.exe to the MO2 executables list and launch it with Run.
+2. In Trousse select Settings > Mod manager > Mod Organizer 2. Select the
+   ModOrganizer.ini for your instance. In a portable install it is next
+   to ModOrganizer.exe. For a global instance check its instance folder
+   under %LOCALAPPDATA%\ModOrganizer. You can also pass
+   --mo2 "full path to ModOrganizer.ini" in the MO2 executable arguments.
+3. Scan the library. Trousse reads enabled mods and Overwrite from the
+   selected profile and uses the virtual Data directory for previews.
+4. Install and enable an outfit archive with MO2's Install a new mod
+   from an archive button. Run BodySlide from MO2 and build the replacer.
+   Keep the built meshes in an enabled output mod or in Overwrite.
+   Restart Trousse from MO2 after switching profiles or changing mods.
+
+Portable ZIP (Windows-x64) with Vortex
 1. Extract the ZIP to a folder where Trousse can stay and run Trousse.exe.
 2. In Settings, select the Vortex Mod Staging Folder and the BodySlide
    folder that contains OutfitStudio.exe. Select Scan library.
@@ -24,14 +38,14 @@ Vortex extension ZIP
 3. To uninstall, remove the extension in Extensions and remove the Trousse
    shortcut from Tools if it is still listed.
 
-Use Installed outfit to check a deployed mesh. Filter by sex, equipment
+Use Installed outfit to check a mesh visible to your active profile. Filter by sex, equipment
 category, and first- or third-person view. Copy console command prepares
 player.additem for the selected item. Enable the racial view when Unique
 Bodies by Race is available. Refresh after deploy or a build in BodySlide.
 Builds from the BodySlide log and possible matches by geometry are shown
 separately. Trousse also identifies the verified Vortex deploy source.
-Use Guide in Trousse for composition and export. Install only the resulting
-outfit ZIPs from the Skyrim Mods page. Source outfits, presets and game
+Use Guide in Trousse for composition and export. Install the resulting
+outfit ZIPs through your mod manager. Source outfits, presets and game
 files need to be installed separately. Open KID after adding an outfit to
 the package. Enable a custom rule and select the parts the character
 should cover with an animation. For upper-body-only modesty, check Cover
@@ -83,11 +97,24 @@ editor can remove weapons when rebuilding an outfit.
 Italiano
 
 Requisiti
-Windows a 64 bit, Skyrim SE o AE gestito da Vortex e BodySlide and Outfit
-Studio 6.1.0 o successivo. Fai il deploy di BodySlide e delle mod degli
-outfit prima di scansionare la libreria.
+Windows a 64 bit, Skyrim SE o AE, Vortex o Mod Organizer 2 e BodySlide
+and Outfit Studio 6.1.0 o successivo. Attiva BodySlide e le mod sorgenti
+prima di scansionare la libreria.
 
-ZIP portatile (Windows-x64)
+Mod Organizer 2
+1. Aggiungi Trousse.exe agli eseguibili di MO2 e avvialo con Esegui.
+2. In Impostazioni > Gestore delle mod scegli Mod Organizer 2. Seleziona
+   il ModOrganizer.ini dell'istanza. In una installazione portatile si
+   trova accanto a ModOrganizer.exe. Per una istanza globale cercalo
+   nella sua cartella sotto %LOCALAPPDATA%\ModOrganizer. Come argomenti
+   dell'eseguibile puoi anche usare --mo2 "percorso di ModOrganizer.ini".
+3. Scansiona la libreria. Trousse legge le mod attive, Overwrite e Data
+   virtuale dal profilo. Riavvialo da MO2 al cambio di profilo o mod.
+4. Installa e abilita lo ZIP esportato in MO2. Avvia BodySlide da MO2,
+   costruisci il replacer e conserva le mesh in una mod di output
+   abilitata o in Overwrite.
+
+ZIP portatile (Windows-x64) con Vortex
 1. Estrai lo ZIP in una cartella stabile e avvia Trousse.exe.
 2. In Impostazioni seleziona la cartella staging di Vortex e la cartella
    BodySlide che contiene OutfitStudio.exe. Avvia la scansione.
