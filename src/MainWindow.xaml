@@ -1,0 +1,859 @@
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Trousse" Width="1320" Height="900" MinWidth="1000" MinHeight="710"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized" Background="#090A0B" Foreground="#ECE9E2"
+        FontFamily="Segoe UI" FontSize="13">
+  <Window.Resources>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#463C30"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#362F27"/>
+    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="#FFFFFF"/>
+    <Style TargetType="TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="Muted" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Setter Property="Foreground" Value="#BFB6A8"/>
+    </Style>
+    <Style x:Key="Heading" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Setter Property="FontSize" Value="20"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style TargetType="CheckBox">
+      <Setter Property="Foreground" Value="#ECE9E2"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="CheckBox">
+            <DockPanel Background="Transparent" LastChildFill="True">
+              <Border x:Name="CheckFrame" DockPanel.Dock="Left" Width="15" Height="15" Margin="0,0,6,0"
+                      Background="#111214" BorderBrush="#8A7153" BorderThickness="1" CornerRadius="2">
+                <Path x:Name="CheckMark" Stroke="#E0BA87" StrokeThickness="1.7" Data="M 2,6 L 5,9 L 10,3" Visibility="Collapsed"/>
+              </Border>
+              <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+            </DockPanel>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True"><Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/></Trigger>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="CheckFrame" Property="BorderBrush" Value="#E0BA87"/></Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="CheckFrame" Property="BorderBrush" Value="#E0BA87"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.48"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="Background" Value="#111214"/>
+      <Setter Property="Foreground" Value="#F1F4F7"/>
+      <Setter Property="CaretBrush" Value="#F1F4F7"/>
+      <Setter Property="BorderBrush" Value="#5A4A37"/>
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="MinHeight" Value="30"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+    </Style>
+    <Style TargetType="Button">
+      <Setter Property="Padding" Value="11,5"/>
+      <Setter Property="MinHeight" Value="30"/>
+      <Setter Property="Background" Value="#262321"/>
+      <Setter Property="BorderBrush" Value="#66533B"/>
+      <Setter Property="Foreground" Value="#F5F1E9"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Surface" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="1" CornerRadius="5" Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#C6A475"/></Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Surface" Property="BorderBrush" Value="#E0BA87"/></Trigger>
+              <Trigger Property="IsPressed" Value="True"><Setter TargetName="Surface" Property="Opacity" Value="0.76"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Surface" Property="Opacity" Value="0.46"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="Accent" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+      <Setter Property="Background" Value="#D9D4C9"/>
+      <Setter Property="BorderBrush" Value="#D9D4C9"/>
+      <Setter Property="Foreground" Value="#151210"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+    </Style>
+    <Style TargetType="ComboBox">
+      <Setter Property="MinHeight" Value="30"/>
+      <Setter Property="Background" Value="#111214"/>
+      <Setter Property="Foreground" Value="#ECE9E2"/>
+      <Setter Property="BorderBrush" Value="#5A4A37"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBox">
+            <Grid>
+              <ToggleButton x:Name="DropDownToggle" Focusable="False" ClickMode="Press"
+                            Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                            IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                <ToggleButton.Template>
+                  <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Box" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" CornerRadius="4">
+                      <Path Data="M0,0 L8,0 L4,4 Z" Fill="#BFB6A8" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#C6A475"/></Trigger>
+                      <Trigger Property="IsChecked" Value="True"><Setter TargetName="Box" Property="BorderBrush" Value="#C6A475"/></Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+              <ContentPresenter IsHitTestVisible="False" Margin="9,0,23,0" VerticalAlignment="Center"
+                                Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"/>
+              <Popup x:Name="PART_Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=DropDownToggle}"
+                     IsOpen="{TemplateBinding IsDropDownOpen}" Focusable="False" AllowsTransparency="True">
+                <Border Background="#1C1B19" BorderBrush="#5A4A37" BorderThickness="1"
+                        MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}">
+                  <ScrollViewer MaxHeight="{TemplateBinding MaxDropDownHeight}" VerticalScrollBarVisibility="Auto"><ItemsPresenter/></ScrollViewer>
+                </Border>
+              </Popup>
+            </Grid>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="DropDownToggle" Property="BorderBrush" Value="#C6A475"/></Trigger>
+              <Trigger Property="IsEnabled" Value="False"><Setter Property="Opacity" Value="0.55"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="ComboBoxItem">
+      <Setter Property="Foreground" Value="#ECE9E2"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ComboBoxItem">
+            <Border x:Name="Row" Background="Transparent" Padding="8,5"><ContentPresenter/></Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsSelected" Value="True"><Setter TargetName="Row" Property="Background" Value="#362F27"/></Trigger>
+              <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="Row" Property="Background" Value="#463C30"/></Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style x:Key="ScrollPage" TargetType="RepeatButton">
+      <Setter Property="Focusable" Value="False"/>
+      <Setter Property="Template">
+        <Setter.Value><ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate></Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="ScrollBar">
+      <Setter Property="Width" Value="12"/>
+      <Setter Property="Background" Value="#191715"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ScrollBar">
+            <Border Background="{TemplateBinding Background}" Padding="3,2">
+              <Track x:Name="PART_Track" Orientation="{TemplateBinding Orientation}" IsDirectionReversed="True">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton x:Name="PageBack" Style="{StaticResource ScrollPage}" Command="{x:Static ScrollBar.PageUpCommand}"/>
+                </Track.DecreaseRepeatButton>
+                <Track.Thumb>
+                  <Thumb>
+                    <Thumb.Template><ControlTemplate TargetType="Thumb">
+                      <Border x:Name="Grip" Background="#665541" CornerRadius="3"/>
+                      <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Grip" Property="Background" Value="#A48763"/></Trigger>
+                        <Trigger Property="IsEnabled" Value="False"><Setter TargetName="Grip" Property="Background" Value="#473B2E"/></Trigger>
+                      </ControlTemplate.Triggers>
+                    </ControlTemplate></Thumb.Template>
+                  </Thumb>
+                </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton x:Name="PageForward" Style="{StaticResource ScrollPage}" Command="{x:Static ScrollBar.PageDownCommand}"/>
+                </Track.IncreaseRepeatButton>
+              </Track>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="Orientation" Value="Horizontal">
+                <Setter TargetName="PART_Track" Property="IsDirectionReversed" Value="False"/>
+                <Setter TargetName="PageBack" Property="Command" Value="{x:Static ScrollBar.PageLeftCommand}"/>
+                <Setter TargetName="PageForward" Property="Command" Value="{x:Static ScrollBar.PageRightCommand}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="Orientation" Value="Horizontal">
+          <Setter Property="Width" Value="Auto"/><Setter Property="Height" Value="12"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+    <Style TargetType="ListBox">
+      <Setter Property="Background" Value="#111214"/>
+      <Setter Property="Foreground" Value="#ECE9E2"/>
+      <Setter Property="BorderBrush" Value="#554838"/>
+      <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+      <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+      <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Padding" Value="0"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBox">
+            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+              <ScrollViewer x:Name="PART_ScrollViewer" Padding="{TemplateBinding Padding}" Focusable="False"
+                            CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
+                            HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                            VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
+                <ItemsPresenter/>
+              </ScrollViewer>
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    <Style TargetType="ListBoxItem">
+      <Setter Property="Padding" Value="8,4"/>
+      <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+      <Setter Property="Foreground" Value="#ECE9E2"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ListBoxItem">
+            <Border x:Name="Row" Background="Transparent" BorderBrush="Transparent" BorderThickness="1"
+                    Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+              <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"/>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="#302820"/>
+              </Trigger>
+              <Trigger Property="IsSelected" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="#362F27"/>
+                <Setter TargetName="Row" Property="BorderBrush" Value="#9C7950"/>
+              </Trigger>
+              <MultiTrigger>
+                <MultiTrigger.Conditions>
+                  <Condition Property="IsSelected" Value="True"/>
+                  <Condition Property="Selector.IsSelectionActive" Value="True"/>
+                </MultiTrigger.Conditions>
+                <Setter TargetName="Row" Property="Background" Value="#463C30"/>
+              </MultiTrigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <Trigger Property="IsEnabled" Value="False"><Setter Property="Foreground" Value="#B6C4D1"/></Trigger>
+      </Style.Triggers>
+    </Style>
+    <Style TargetType="Border" x:Key="Panel">
+      <Setter Property="Background" Value="#1C1B19"/>
+      <Setter Property="BorderBrush" Value="#574936"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="14"/>
+    </Style>
+    <DataTemplate x:Key="OarFlagEditor">
+      <CheckBox IsChecked="{Binding Checked, Mode=TwoWay}" VerticalAlignment="Center"
+                AutomationProperties.Name="{Binding Label}" HorizontalAlignment="Left"/>
+    </DataTemplate>
+    <DataTemplate x:Key="OarChoiceEditor">
+      <ComboBox ItemsSource="{Binding Choices}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                SelectedValue="{Binding Value, Mode=TwoWay}" AutomationProperties.Name="{Binding Label}"/>
+    </DataTemplate>
+    <DataTemplate x:Key="OarTextEditor">
+      <TextBox Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{Binding Label}"/>
+    </DataTemplate>
+  </Window.Resources>
+
+  <Grid Margin="22,16">
+    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+    <Grid Margin="0,0,0,12">
+      <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+      <WrapPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center">
+        <Button x:Name="HomeNav" Content="Compose" Margin="0,0,6,0"/>
+        <Button x:Name="CurrentNav" Content="Installed outfit" Margin="0,0,6,0"/>
+        <Button x:Name="BodiesNav" Content="Bodies" Margin="0,0,6,0"/>
+        <Button x:Name="PackNav" Content="Package" Margin="0,0,6,0"/>
+        <Button x:Name="KidNav" Content="KID" Margin="0,0,6,0"/>
+        <Button x:Name="OarNav" Content="OAR" Margin="0,0,6,0"/>
+        <Button x:Name="PosesNav" Content="Poses" Margin="0,0,6,0"/>
+        <Button x:Name="DressNav" Content="Dress Up Lovers" Margin="0,0,6,0"/>
+        <Button x:Name="SettingsNav" Content="Settings" Margin="0,0,6,0"/>
+        <Button x:Name="GuideNav" Content="Guide"/>
+      </WrapPanel>
+      <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+        <Image x:Name="BrandIcon" Width="43" Height="43" Margin="0,0,10,0"/>
+        <TextBlock Text="Trousse" FontFamily="Georgia" FontSize="34" FontWeight="SemiBold"/>
+        <Image x:Name="StoreBadge" Width="29" Height="29" Margin="18,0,7,0" Visibility="Collapsed"/>
+        <Image x:Name="SkyrimBadge" Height="30" MaxWidth="104" Margin="2,0,0,0" Stretch="Uniform" Visibility="Collapsed"/>
+      </StackPanel>
+    </Grid>
+
+    <Grid Grid.Row="1">
+      <Grid x:Name="HomePage">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="1.28*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="1.47*"/><RowDefinition Height="12"/><RowDefinition Height="1*"/></Grid.RowDefinitions>
+          <Border Style="{StaticResource Panel}">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <TextBlock x:Name="LibraryHeading" Text="BodySlide library" Style="{StaticResource Heading}"/>
+              <DockPanel Grid.Row="1" Margin="0,7,0,7">
+                <TextBlock x:Name="PieceCount" DockPanel.Dock="Right" Margin="8,0,0,0" Style="{StaticResource Muted}"/>
+                <TextBlock x:Name="PieceSearchLabel" Text="Search mods or parts" Margin="0,0,8,0" Style="{StaticResource Muted}"/>
+                <TextBox x:Name="PieceSearch"/>
+              </DockPanel>
+              <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="0.88*"/><ColumnDefinition Width="8"/><ColumnDefinition Width="1.12*"/></Grid.ColumnDefinitions>
+                <ListBox x:Name="ModList" AutomationProperties.Name="Mods">
+                  <ListBox.ItemTemplate><DataTemplate>
+                    <DockPanel ToolTip="{Binding Name}">
+                      <Button DockPanel.Dock="Right" Content="{Binding Badge}" ToolTip="{Binding BadgeHint}" MinHeight="23" Padding="6,1"
+                              Margin="6,0,0,0" Foreground="{Binding BadgeColor}" Command="{Binding OpenSource}"/>
+                      <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                    </DockPanel>
+                  </DataTemplate></ListBox.ItemTemplate>
+                </ListBox>
+                <ListBox x:Name="SourceList" Grid.Column="2" SelectionMode="Extended" AutomationProperties.Name="BodySlide parts">
+                  <ListBox.ItemTemplate><DataTemplate>
+                    <TextBlock Text="{Binding ShortName}" ToolTip="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                  </DataTemplate></ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
+              <DockPanel Grid.Row="3" Margin="0,7,0,0" LastChildFill="False">
+                <Button x:Name="InspectPiece" Content="Inspect part" Margin="0,0,6,0"/>
+                <Button x:Name="AddPieces" DockPanel.Dock="Right" Content="Add selected parts" Style="{StaticResource Accent}"/>
+                <Button x:Name="DressComposePart" DockPanel.Dock="Right" Content="Use in Dress Up" Margin="0,0,6,0"/>
+              </DockPanel>
+            </Grid>
+          </Border>
+
+          <Border Grid.Row="2" Style="{StaticResource Panel}">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <TextBlock x:Name="VanillaHeading" Text="Game equipment" Style="{StaticResource Heading}"/>
+              <DockPanel Grid.Row="1" Margin="0,7,0,6">
+                <TextBlock x:Name="TargetCount" DockPanel.Dock="Right" Style="{StaticResource Muted}" Margin="8,0,0,0"/>
+                <ComboBox x:Name="TargetCategory" DockPanel.Dock="Right" MinWidth="148" Margin="7,0,0,0" AutomationProperties.Name="Equipment category"/>
+                <TextBlock x:Name="TargetSearchLabel" Text="Search base game and DLC" Margin="0,0,8,0" Style="{StaticResource Muted}"/>
+                <TextBox x:Name="TargetSearch"/>
+              </DockPanel>
+              <ListBox x:Name="TargetList" Grid.Row="2" AutomationProperties.Name="Vanilla equipment">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <DockPanel ToolTip="{Binding Mesh}">
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding View}" FontSize="11" Style="{StaticResource Muted}" Margin="8,0,0,0"/>
+                    <TextBlock DockPanel.Dock="Right" Text="{Binding ShortIds}" ToolTip="{Binding ConsoleIds}"
+                               FontSize="11" Style="{StaticResource Muted}" Margin="8,0,0,0"/>
+                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                  </DockPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+              <DockPanel Grid.Row="3" Margin="0,6,0,0">
+                <Button x:Name="Variants" DockPanel.Dock="Right" Content="Variants and modesty"/>
+                <Button x:Name="DressComposeTarget" DockPanel.Dock="Right" Content="Use in Dress Up" Margin="0,0,6,0"/>
+                <TextBlock x:Name="TargetInfo" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis" Margin="0,0,6,0"/>
+              </DockPanel>
+            </Grid>
+          </Border>
+        </Grid>
+
+        <Grid Grid.Column="2">
+          <Grid.RowDefinitions><RowDefinition Height="1.15*"/><RowDefinition Height="12"/><RowDefinition Height="1*"/></Grid.RowDefinitions>
+          <Border Style="{StaticResource Panel}" Padding="13">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <DockPanel>
+                <Button x:Name="ShowOutfitView" DockPanel.Dock="Right" Content="Show outfit"/>
+                <TextBlock x:Name="PreviewHeading" Text="Live preview" Style="{StaticResource Heading}"/>
+              </DockPanel>
+              <Border x:Name="PreviewSurface" Grid.Row="1" Margin="0,8,0,7" Background="#111214" BorderBrush="#514434" BorderThickness="1" CornerRadius="4">
+                <Grid Background="Transparent">
+                  <Viewport3D x:Name="Viewport" ClipToBounds="True" IsHitTestVisible="False"/>
+                  <TextBlock x:Name="LiveHint" Text="Add parts to see the outfit" HorizontalAlignment="Center"
+                             VerticalAlignment="Center" Style="{StaticResource Muted}" IsHitTestVisible="False"/>
+                </Grid>
+              </Border>
+              <DockPanel Grid.Row="2">
+                <Button x:Name="Preview" Content="Open in BodySlide" DockPanel.Dock="Right"/>
+                <TextBlock x:Name="ViewControls" Text="Drag to rotate · scroll to zoom" Style="{StaticResource Muted}"/>
+              </DockPanel>
+            </Grid>
+          </Border>
+          <Border Grid.Row="2" Style="{StaticResource Panel}">
+            <Grid>
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+              <DockPanel Margin="0,0,0,7">
+                <Button x:Name="NewOutfit" Content="New outfit" DockPanel.Dock="Right"/>
+                <TextBlock x:Name="ComposeHeading" Text="Compose outfit" Style="{StaticResource Heading}"/>
+              </DockPanel>
+              <DockPanel Grid.Row="1" Margin="0,0,0,6">
+                <TextBlock x:Name="OutfitNameLabel" Text="Outfit name" Width="105" Style="{StaticResource Muted}"/>
+                <TextBox x:Name="OutfitName" MaxLength="100" AutomationProperties.Name="Outfit name"/>
+              </DockPanel>
+              <DockPanel Grid.Row="2" Margin="0,0,0,7">
+                <TextBlock x:Name="MeshLabel" Text="Destination" Width="105" Style="{StaticResource Muted}"/>
+                <TextBlock x:Name="MeshPath" TextTrimming="CharacterEllipsis"/>
+              </DockPanel>
+              <Border x:Name="ComposeConflict" Grid.Row="3" Background="#412326" BorderBrush="#E56865" BorderThickness="3,0,0,0"
+                      Padding="8,5" Margin="0,0,0,7" Visibility="Collapsed">
+                <TextBlock x:Name="ComposeConflictMessage" Foreground="#FFD1CF" TextWrapping="Wrap" MaxHeight="52"/>
+              </Border>
+              <ListBox x:Name="DraftList" Grid.Row="4" AutomationProperties.Name="Selected parts">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <Border x:Name="PartConflict" BorderThickness="3,0,0,0" BorderBrush="Transparent" Padding="5,2">
+                    <StackPanel>
+                      <TextBlock x:Name="PartName" Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding Detail}" FontSize="11" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+                    </StackPanel>
+                  </Border>
+                  <DataTemplate.Triggers>
+                    <DataTrigger Binding="{Binding HasBuildError}" Value="True">
+                      <Setter TargetName="PartName" Property="Foreground" Value="#FFD1CF"/>
+                      <Setter TargetName="PartConflict" Property="Background" Value="#592B2D"/>
+                      <Setter TargetName="PartConflict" Property="BorderBrush" Value="#E56865"/>
+                      <Setter TargetName="PartConflict" Property="ToolTip" Value="{Binding BuildError}"/>
+                    </DataTrigger>
+                  </DataTemplate.Triggers>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+              <DockPanel Grid.Row="5" Margin="0,7,0,0" LastChildFill="False">
+                <Button x:Name="Up" Content="↑" AutomationProperties.Name="Move part up" Margin="0,0,4,0"/>
+                <Button x:Name="Down" Content="↓" AutomationProperties.Name="Move part down" Margin="0,0,4,0"/>
+                <Button x:Name="RemovePiece" Content="Remove part"/>
+                <Button x:Name="Commit" DockPanel.Dock="Right" Content="Add to package" Style="{StaticResource Accent}"/>
+              </DockPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </Grid>
+
+      <Border x:Name="PackPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,12">
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+              <Button x:Name="OpenPack" Content="Open project" Margin="0,0,6,0"/>
+              <Button x:Name="SavePack" Content="Save project"/>
+            </StackPanel>
+            <TextBlock x:Name="PackageHeading" Text="Replacer package" Style="{StaticResource Heading}"/>
+          </DockPanel>
+          <DockPanel Grid.Row="1" Margin="0,0,0,8">
+            <TextBlock x:Name="PackNameLabel" Text="Package name" Margin="0,0,10,0" Style="{StaticResource Muted}"/>
+            <TextBox x:Name="PackName" Text="My replacers" MaxLength="72"/>
+          </DockPanel>
+          <ListBox x:Name="PackList" Grid.Row="2" AutomationProperties.Name="Outfits in package">
+            <ListBox.ItemTemplate><DataTemplate>
+              <StackPanel ToolTip="{Binding Mesh}">
+                <TextBlock x:Name="PackageOutfitName" Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding Mesh}" FontSize="11" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+              </StackPanel>
+              <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding HasBuildError}" Value="True">
+                  <Setter TargetName="PackageOutfitName" Property="Foreground" Value="#FF9E9A"/>
+                </DataTrigger>
+              </DataTemplate.Triggers>
+            </DataTemplate></ListBox.ItemTemplate>
+          </ListBox>
+          <DockPanel Grid.Row="3" Margin="0,8,0,0" LastChildFill="False">
+            <Button x:Name="EditOutfit" Content="Edit outfit" Margin="0,0,6,0"/>
+            <Button x:Name="RemoveOutfit" Content="Remove outfit"/>
+            <Button x:Name="Export" DockPanel.Dock="Right" Content="Export Vortex ZIP" Style="{StaticResource Accent}"/>
+            <Button x:Name="ExportOdt" DockPanel.Dock="Right" Content="Save outfit report…" Margin="0,0,8,0"/>
+          </DockPanel>
+        </Grid>
+      </Border>
+
+      <Border x:Name="KidPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,10">
+            <Button x:Name="ExportKid" DockPanel.Dock="Right" Content="Save KID…"/>
+            <TextBlock x:Name="KidHeading" Text="Package modesty rules" Style="{StaticResource Heading}"/>
+          </DockPanel>
+          <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="0.8*"/><ColumnDefinition Width="14"/><ColumnDefinition Width="1.2*"/></Grid.ColumnDefinitions>
+            <DockPanel>
+              <TextBlock x:Name="KidOutfitsHeading" DockPanel.Dock="Top" Text="Outfits in the package" Style="{StaticResource Muted}" Margin="0,0,0,7"/>
+              <TextBlock x:Name="KidEmpty" DockPanel.Dock="Bottom" TextWrapping="Wrap" Style="{StaticResource Muted}" Margin="0,8,0,0"/>
+              <ListBox x:Name="KidOutfits" DisplayMemberPath="Name"/>
+            </DockPanel>
+            <Grid Grid.Column="2">
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <CheckBox x:Name="EnableModesty" Content="Use a custom rule for this outfit" Margin="0,0,0,10"/>
+              <TextBlock x:Name="KidAnimationHint" Grid.Row="1" TextWrapping="Wrap" Style="{StaticResource Muted}" Margin="0,0,0,8"/>
+              <WrapPanel Grid.Row="2" Margin="0,0,0,12">
+                <CheckBox x:Name="ModestyTop" Content="Cover upper body · slot 32" Margin="0,0,16,4"/>
+                <CheckBox x:Name="ModestyBottom" Content="Cover lower body · slots 49/52" Margin="0,0,0,4"/>
+              </WrapPanel>
+              <DockPanel Grid.Row="3" Margin="0,0,0,12">
+                <TextBlock x:Name="ModestyRaceLabel" Text="Wearer race" Width="115" Style="{StaticResource Muted}"/>
+                <ComboBox x:Name="ModestyRace" MinWidth="160" HorizontalAlignment="Left"/>
+              </DockPanel>
+              <TextBlock x:Name="KidRecordHeading" Grid.Row="4" Text="Game items affected" Style="{StaticResource Heading}" Margin="0,0,0,6"/>
+              <ListBox x:Name="KidRecords" Grid.Row="5" SelectionMode="Multiple" DisplayMemberPath="Caption"/>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Border>
+
+      <Grid x:Name="CurrentPage" Visibility="Collapsed">
+        <Grid.ColumnDefinitions><ColumnDefinition Width="0.85*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="1.15*"/></Grid.ColumnDefinitions>
+        <Border Style="{StaticResource Panel}">
+          <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+            <DockPanel>
+              <Button x:Name="CurrentRefresh" Content="Refresh" DockPanel.Dock="Right" Margin="8,0,0,0"/>
+              <TextBlock x:Name="CurrentHeading" Text="Installed outfit" Style="{StaticResource Heading}"/>
+            </DockPanel>
+            <DockPanel Grid.Row="1" Margin="0,10,0,4">
+              <ComboBox x:Name="CurrentRace" DockPanel.Dock="Right" MinWidth="100" Margin="5,0,0,0" AutomationProperties.Name="Race"/>
+              <CheckBox x:Name="CurrentUnique" Content="Use Unique Bodies by Race" VerticalAlignment="Center"/>
+            </DockPanel>
+            <TextBlock x:Name="CurrentDetection" Grid.Row="2" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,9"/>
+            <DockPanel Grid.Row="3" Margin="0,0,0,6">
+              <TextBlock x:Name="CurrentSearchLabel" Text="Search equipment" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+              <TextBox x:Name="CurrentSearch"/>
+            </DockPanel>
+            <StackPanel Grid.Row="4" Orientation="Horizontal" Margin="0,0,0,6">
+              <ComboBox x:Name="CurrentSex" MinWidth="104" Margin="0,0,7,0" AutomationProperties.Name="Sex"/>
+              <ComboBox x:Name="CurrentCategory" MinWidth="140" Margin="0,0,7,0" AutomationProperties.Name="Equipment category"/>
+              <ComboBox x:Name="CurrentPerspective" MinWidth="114" AutomationProperties.Name="View"/>
+            </StackPanel>
+            <ListBox x:Name="CurrentList" Grid.Row="5" AutomationProperties.Name="Installed equipment">
+              <ListBox.ItemTemplate><DataTemplate>
+                <StackPanel ToolTip="{Binding Mesh}">
+                  <DockPanel>
+                    <TextBlock Text="{Binding View}" DockPanel.Dock="Right" FontSize="11" Style="{StaticResource Muted}" Margin="6,0,0,0"/>
+                    <TextBlock Text="{Binding ShortIds}" ToolTip="{Binding ConsoleIds}" DockPanel.Dock="Right"
+                               FontSize="11" Style="{StaticResource Muted}" Margin="6,0,0,0"/>
+                    <TextBlock Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+                  </DockPanel>
+                  <TextBlock Text="{Binding Mesh}" FontSize="11" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+                </StackPanel>
+              </DataTemplate></ListBox.ItemTemplate>
+            </ListBox>
+          </Grid>
+        </Border>
+        <Border Grid.Column="2" Style="{StaticResource Panel}">
+          <Grid>
+            <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+            <DockPanel Margin="0,0,0,8">
+              <CheckBox x:Name="CurrentLowWeight" DockPanel.Dock="Right" Content="Low weight" VerticalAlignment="Center" Margin="6,0,0,0"/>
+              <Button x:Name="CurrentCopy" DockPanel.Dock="Right" Content="Copy console command" Margin="8,0,8,0"/>
+              <TextBlock x:Name="CurrentPreviewHeading" Text="Installed mesh" Style="{StaticResource Heading}"/>
+            </DockPanel>
+            <Border x:Name="CurrentSurface" Grid.Row="1" Background="#111214" BorderBrush="#362F27" BorderThickness="1" CornerRadius="4" ClipToBounds="True">
+              <Grid>
+                <Viewport3D x:Name="CurrentViewport" IsHitTestVisible="False"/>
+                <TextBlock x:Name="CurrentHint" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" Margin="24" Style="{StaticResource Muted}" IsHitTestVisible="False"/>
+              </Grid>
+            </Border>
+            <ScrollViewer Grid.Row="2" MaxHeight="138" VerticalScrollBarVisibility="Auto" Margin="0,8,0,0">
+              <StackPanel>
+                <TextBlock x:Name="CurrentSource" TextWrapping="Wrap" Style="{StaticResource Muted}"/>
+                <TextBlock x:Name="CurrentProject" TextWrapping="Wrap" Margin="0,4,0,0"/>
+              </StackPanel>
+            </ScrollViewer>
+          </Grid>
+        </Border>
+      </Grid>
+
+      <Border x:Name="BodiesPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <Grid Margin="0,0,0,10">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="1.55*"/></Grid.ColumnDefinitions>
+            <DockPanel>
+              <TextBlock x:Name="BodiesSearchLabel" Text="Search bodies" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+              <TextBox x:Name="BodiesSearch"/>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+              <TextBlock x:Name="BodyPresetSearchLabel" Text="Search presets" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+              <TextBox x:Name="BodyPresetSearch"/>
+            </DockPanel>
+          </Grid>
+          <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="1*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="1.55*"/></Grid.ColumnDefinitions>
+            <DockPanel>
+              <TextBlock x:Name="BodyProjectsHeading" DockPanel.Dock="Top" Text="CBBE body projects" Style="{StaticResource Heading}" Margin="0,0,0,8"/>
+              <Button x:Name="AddBody" DockPanel.Dock="Bottom" Content="Add body to outfit" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+              <ListBox x:Name="BodyProjects">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <StackPanel><TextBlock Text="{Binding Name}"/><TextBlock Text="{Binding ModName}" Style="{StaticResource Muted}" FontSize="11"/></StackPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+              <TextBlock x:Name="BodyPresetsHeading" DockPanel.Dock="Top" Text="BodySlide slider presets" Style="{StaticResource Heading}" Margin="0,0,0,8"/>
+              <Button x:Name="BodyResetPreset" DockPanel.Dock="Bottom" Content="Use project defaults" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+              <ListBox x:Name="BodyPresets">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <StackPanel ToolTip="{Binding FilePath}"><TextBlock Text="{Binding Name}"/><TextBlock Text="{Binding Mod}" Style="{StaticResource Muted}" FontSize="11"/></StackPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+            <Grid Grid.Column="4">
+              <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="2.1*"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+              <DockPanel Margin="0,0,0,8">
+                <ComboBox x:Name="BodyWeight" DockPanel.Dock="Right" MinWidth="116" AutomationProperties.Name="Preview weight"/>
+                <TextBlock x:Name="BodyPreviewHeading" Text="Body preview" Style="{StaticResource Heading}"/>
+              </DockPanel>
+              <Border x:Name="BodyPreviewSurface" Grid.Row="1" Background="#111214" BorderBrush="#362F27" BorderThickness="1" CornerRadius="4" ClipToBounds="True">
+                <Grid>
+                  <Viewport3D x:Name="BodyViewport" IsHitTestVisible="False"/>
+                  <TextBlock x:Name="BodyPreviewHint" Style="{StaticResource Muted}" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="12"/>
+                </Grid>
+              </Border>
+              <TextBlock x:Name="BodyPreviewControls" Grid.Row="2" Style="{StaticResource Muted}" Margin="0,6,0,12" TextWrapping="Wrap"/>
+              <TextBlock x:Name="PresetHeading" Grid.Row="3" Text="Preset details" Style="{StaticResource Heading}" Margin="0,0,0,6"/>
+              <TextBlock x:Name="PresetDetails" Grid.Row="4" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,0,0,6"/>
+              <ListBox x:Name="PresetSliders" Grid.Row="5"/>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Border>
+
+      <Border x:Name="OarPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/></Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,8">
+            <Button x:Name="OarSave" DockPanel.Dock="Right" Content="Save INI…" Style="{StaticResource Accent}"/>
+            <Button x:Name="OarReload" DockPanel.Dock="Right" Content="Reload" Margin="0,0,8,0"/>
+            <Button x:Name="OarOpen" DockPanel.Dock="Right" Content="Open INI…" Margin="0,0,8,0"/>
+            <TextBlock x:Name="OarHeading" Text="Open Animation Replacer settings" Style="{StaticResource Heading}"/>
+          </DockPanel>
+          <DockPanel Grid.Row="1" Margin="0,0,0,10" LastChildFill="False">
+            <TextBlock x:Name="OarSourceLabel" Text="Configuration" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+            <ComboBox x:Name="OarSources" DisplayMemberPath="Label" MinWidth="230" MaxWidth="385" Margin="0,0,8,0"/>
+            <ComboBox x:Name="OarSubmods" DisplayMemberPath="Label" MinWidth="210" MaxWidth="365" Margin="0,0,8,0"/>
+            <ComboBox x:Name="OarRaces" MinWidth="150" MaxWidth="185" Visibility="Collapsed" AutomationProperties.Name="Race"/>
+          </DockPanel>
+          <DockPanel Grid.Row="2" Margin="0,0,0,8">
+            <ComboBox x:Name="OarSections" DisplayMemberPath="Label" DockPanel.Dock="Left" MinWidth="168" Margin="0,0,10,0"/>
+            <TextBlock x:Name="OarSearchLabel" Text="Search settings" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+            <TextBox x:Name="OarSearch"/>
+          </DockPanel>
+          <TextBlock x:Name="OarPath" Grid.Row="3" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis" Margin="0,0,0,8"/>
+          <ListBox x:Name="OarEntries" Grid.Row="4">
+            <ListBox.ItemTemplate><DataTemplate>
+              <Grid Margin="2,5,6,5" ToolTip="{Binding Hint}">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="3*"/><ColumnDefinition Width="2*"/></Grid.ColumnDefinitions>
+                <StackPanel Margin="0,0,10,0">
+                  <TextBlock Text="{Binding Label}" TextWrapping="Wrap"/>
+                  <TextBlock Text="{Binding Context}" Style="{StaticResource Muted}" TextWrapping="Wrap" FontSize="11"/>
+                </StackPanel>
+                <ContentControl Grid.Column="1" Content="{Binding}" VerticalAlignment="Center" Focusable="False">
+                  <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                      <Setter Property="ContentTemplate" Value="{StaticResource OarTextEditor}"/>
+                      <Style.Triggers>
+                        <DataTrigger Binding="{Binding Kind}" Value="Flag"><Setter Property="ContentTemplate" Value="{StaticResource OarFlagEditor}"/></DataTrigger>
+                        <DataTrigger Binding="{Binding Kind}" Value="Choice"><Setter Property="ContentTemplate" Value="{StaticResource OarChoiceEditor}"/></DataTrigger>
+                      </Style.Triggers>
+                    </Style>
+                  </ContentControl.Style>
+                </ContentControl>
+              </Grid>
+            </DataTemplate></ListBox.ItemTemplate>
+          </ListBox>
+        </Grid>
+      </Border>
+
+      <Border x:Name="PosesPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,10">
+            <Button x:Name="PoseSave" DockPanel.Dock="Right" Content="Save Favorites.json…" Style="{StaticResource Accent}"/>
+            <Button x:Name="PoseRefresh" DockPanel.Dock="Right" Content="Refresh" Margin="0,0,8,0"/>
+            <TextBlock x:Name="PoseHeading" Text="Poser Hotkeys Plus" Style="{StaticResource Heading}"/>
+          </DockPanel>
+          <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="1.15*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="0.7*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+            <DockPanel>
+              <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <ComboBox x:Name="PosePacks" DockPanel.Dock="Left" MinWidth="135" MaxWidth="220" Margin="0,0,8,0" AutomationProperties.Name="Pose pack"/>
+                <TextBlock x:Name="PoseCount" DockPanel.Dock="Right" Style="{StaticResource Muted}" Margin="8,0,0,0"/>
+                <TextBlock x:Name="PoseSearchLabel" Text="Search poses" Style="{StaticResource Muted}" Margin="0,0,8,0"/>
+                <TextBox x:Name="PoseSearch" MinWidth="40"/>
+              </DockPanel>
+              <Button x:Name="PoseAdd" DockPanel.Dock="Bottom" Content="Add to favorites" Margin="0,8,0,0" HorizontalAlignment="Left"/>
+              <ListBox x:Name="PoseLibrary" SelectionMode="Extended">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <StackPanel ToolTip="{Binding Event}"><TextBlock Text="{Binding Name}"/><TextBlock Text="{Binding Pack}" Style="{StaticResource Muted}" FontSize="11"/></StackPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+              <TextBlock x:Name="PoseFavoritesHeading" DockPanel.Dock="Top" Text="Favorites" Style="{StaticResource Heading}" Margin="0,0,0,8"/>
+              <Button x:Name="PoseRemove" DockPanel.Dock="Bottom" Content="Remove from favorites" Margin="0,8,0,0" HorizontalAlignment="Left"/>
+              <ListBox x:Name="PoseFavorites" SelectionMode="Extended" DisplayMemberPath="Name"/>
+            </DockPanel>
+            <DockPanel Grid.Column="4">
+              <TextBlock x:Name="PosePreviewHeading" DockPanel.Dock="Top" Text="Pose preview" Style="{StaticResource Heading}" Margin="0,0,0,8"/>
+              <TextBlock x:Name="PosePreviewName" DockPanel.Dock="Top" TextWrapping="Wrap" Margin="0,0,0,8"/>
+              <StackPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                <DockPanel Margin="0,0,0,8" x:Name="PoseImageControls" Visibility="Collapsed">
+                  <Button x:Name="PoseImageNext" DockPanel.Dock="Right" Content="›" MinWidth="28" Margin="6,0,0,0"/>
+                  <Button x:Name="PoseImagePrevious" DockPanel.Dock="Right" Content="‹" MinWidth="28" Margin="6,0,0,0"/>
+                  <TextBlock x:Name="PoseImageCaption" Style="{StaticResource Muted}" TextWrapping="Wrap"/>
+                </DockPanel>
+                <DockPanel Margin="0,0,0,6">
+                  <Button x:Name="PoseOpenPreview" DockPanel.Dock="Left" Content="3D preview" Margin="0,0,6,0"/>
+                  <Button x:Name="PoseShowImages" DockPanel.Dock="Left" Content="Gallery" Margin="0,0,6,0"/>
+                  <Button x:Name="PoseExternalPreview" DockPanel.Dock="Left" Content="Open in BodySlide" Visibility="Collapsed"/>
+                  <TextBlock/>
+                </DockPanel>
+                <DockPanel x:Name="PoseTimeline" Visibility="Collapsed">
+                  <Button x:Name="PosePlay" DockPanel.Dock="Left" Content="Play" Margin="0,0,8,0"/>
+                  <Slider x:Name="PoseFrame" Minimum="0" Maximum="1" VerticalAlignment="Center" AutomationProperties.Name="Animation frame"/>
+                </DockPanel>
+                <TextBlock x:Name="PoseAnimationHint" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+              </StackPanel>
+              <Border x:Name="PosePreviewSurface" Background="#111214" BorderBrush="#54483A" BorderThickness="1" Padding="8">
+                <Grid>
+                  <Image x:Name="PoseImage" Stretch="Uniform"/>
+                  <Viewport3D x:Name="PoseViewport" Visibility="Collapsed" ClipToBounds="True"/>
+                  <TextBlock x:Name="PoseImagePlaceholder" HorizontalAlignment="Center" VerticalAlignment="Center"
+                             TextAlignment="Center" TextWrapping="Wrap" Style="{StaticResource Muted}"/>
+                </Grid>
+              </Border>
+            </DockPanel>
+          </Grid>
+          <TextBlock x:Name="PoseDestination" Grid.Row="2" Margin="0,8,0,0" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+        </Grid>
+      </Border>
+
+      <Border x:Name="DressPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <Grid>
+          <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+          <DockPanel Margin="0,0,0,8">
+            <Button x:Name="DressSaveGame" DockPanel.Dock="Right" Content="Save to Skyrim" Style="{StaticResource Accent}"/>
+            <Button x:Name="DressExport" DockPanel.Dock="Right" Content="Export JSON…" Margin="0,0,6,0"/>
+            <Button x:Name="DressOpen" DockPanel.Dock="Right" Content="Open profile…" Margin="0,0,6,0"/>
+            <TextBlock Text="Dress Up Lovers" Style="{StaticResource Heading}"/>
+          </DockPanel>
+          <TextBlock x:Name="DressStatus" Grid.Row="1" Style="{StaticResource Muted}" Margin="0,0,0,10" TextWrapping="Wrap"/>
+          <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="0.85*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="*"/><ColumnDefinition Width="10"/><ColumnDefinition Width="1.25*"/></Grid.ColumnDefinitions>
+            <DockPanel>
+              <TextBlock x:Name="DressProfilesHeading" DockPanel.Dock="Top" Text="Custom outfits" Style="{StaticResource Heading}" Margin="0,0,0,6"/>
+              <ComboBox x:Name="DressProfileSlot" DockPanel.Dock="Top" Margin="0,0,0,6" AutomationProperties.Name="Game profile"/>
+              <TextBlock x:Name="DressProfileNameLabel" DockPanel.Dock="Top" Text="Profile name" Style="{StaticResource Muted}" Margin="0,0,0,4"/>
+              <TextBox x:Name="DressProfileName" DockPanel.Dock="Top" Margin="0,0,0,6" AutomationProperties.Name="Profile name"/>
+              <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,7,0,0">
+                <Button x:Name="DressNew" Content="New outfit" Margin="0,0,6,0"/>
+                <Button x:Name="DressRemoveOutfit" Content="Remove outfit"/>
+              </DockPanel>
+              <ListBox x:Name="DressOutfits" AutomationProperties.Name="Custom outfits" DisplayMemberPath="Label"/>
+            </DockPanel>
+            <DockPanel Grid.Column="2">
+              <TextBlock x:Name="DressItemsHeading" DockPanel.Dock="Top" Text="Outfit equipment" Style="{StaticResource Heading}" Margin="0,0,0,6"/>
+              <TextBlock x:Name="DressNameLabel" DockPanel.Dock="Top" Text="Name shown in game" Style="{StaticResource Muted}" Margin="0,0,0,4"/>
+              <TextBox x:Name="DressName" DockPanel.Dock="Top" Margin="0,0,0,6" AutomationProperties.Name="Name shown in game"/>
+              <TextBlock x:Name="DressOutfitNotice" DockPanel.Dock="Bottom" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,7,0,0"/>
+              <DockPanel DockPanel.Dock="Bottom" LastChildFill="False" Margin="0,7,0,0">
+                <Button x:Name="DressRemoveItems" Content="Remove selected" Margin="0,0,6,0"/>
+                <Button x:Name="DressGoCompose" Content="Open Compose"/>
+              </DockPanel>
+              <ListBox x:Name="DressItems" SelectionMode="Extended" AutomationProperties.Name="Outfit equipment">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <StackPanel ToolTip="{Binding Reference}"><TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Reference}" Style="{StaticResource Muted}" FontSize="11" TextTrimming="CharacterEllipsis"/></StackPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+            <DockPanel Grid.Column="4">
+              <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <Button x:Name="DressRefresh" DockPanel.Dock="Right" Content="Refresh equipment" Margin="6,0,0,0"/>
+                <TextBlock x:Name="DressLibraryHeading" Text="Game equipment" Style="{StaticResource Heading}" TextTrimming="CharacterEllipsis"/>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top" Margin="0,0,0,6">
+                <ComboBox x:Name="DressCategory" DockPanel.Dock="Right" MinWidth="120" Margin="6,0,0,0" AutomationProperties.Name="Equipment category"/>
+                <TextBlock x:Name="DressSearchLabel" Text="Search" Style="{StaticResource Muted}" Margin="0,0,6,0"/>
+                <TextBox x:Name="DressSearch" AutomationProperties.Name="Search game equipment"/>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Bottom" Margin="0,7,0,0">
+                <Button x:Name="DressAddItems" DockPanel.Dock="Right" Content="Add selected equipment" Style="{StaticResource Accent}"/>
+                <TextBlock x:Name="DressResultCount" Style="{StaticResource Muted}"/>
+              </DockPanel>
+              <ListBox x:Name="DressEquipment" SelectionMode="Extended" AutomationProperties.Name="Game equipment">
+                <ListBox.ItemTemplate><DataTemplate>
+                  <StackPanel ToolTip="{Binding Reference}"><TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock Text="{Binding Reference}" Style="{StaticResource Muted}" FontSize="11" TextTrimming="CharacterEllipsis"/></StackPanel>
+                </DataTemplate></ListBox.ItemTemplate>
+              </ListBox>
+            </DockPanel>
+          </Grid>
+          <TextBlock x:Name="DressImportHint" Grid.Row="3" Style="{StaticResource Muted}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+        </Grid>
+      </Border>
+
+      <Border x:Name="SettingsPage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel MaxWidth="830" HorizontalAlignment="Left">
+          <TextBlock x:Name="SettingsHeading" Text="Settings" Style="{StaticResource Heading}" Margin="0,0,0,4"/>
+          <TextBlock x:Name="AppVersionLabel" Style="{StaticResource Muted}" Margin="0,0,0,14"/>
+          <TextBlock x:Name="VortexLabel" Text="Vortex staging folder" Margin="0,0,0,5"/>
+          <DockPanel Margin="0,0,0,12">
+            <Button x:Name="BrowseVortex" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
+            <TextBox x:Name="VortexPath" MinWidth="570"/>
+          </DockPanel>
+          <TextBlock x:Name="BodyLabel" Text="BodySlide folder" Margin="0,0,0,5"/>
+          <DockPanel Margin="0,0,0,12">
+            <Button x:Name="BrowseBody" DockPanel.Dock="Right" Content="Browse" Margin="7,0,0,0"/>
+            <TextBox x:Name="BodyPath" MinWidth="570"/>
+          </DockPanel>
+          <DockPanel Margin="0,0,0,12">
+            <TextBlock x:Name="LanguageLabel" Text="Language" Width="130"/>
+            <ComboBox x:Name="Language" Width="190" HorizontalAlignment="Left" SelectedIndex="0">
+              <ComboBoxItem Content="English"/><ComboBoxItem Content="Italiano"/>
+            </ComboBox>
+          </DockPanel>
+          <DockPanel Margin="0,0,0,12">
+            <TextBlock x:Name="BadgeEditionLabel" Text="Edition badge" Width="130"/>
+            <ComboBox x:Name="BadgeEdition" Width="190" HorizontalAlignment="Left"/>
+          </DockPanel>
+          <CheckBox x:Name="AutoScan" Content="Scan at startup" IsChecked="True" Margin="0,0,0,8"/>
+          <CheckBox x:Name="FemaleOnly" Content="Prefer female and shared equipment" IsChecked="True" Margin="0,0,0,12"/>
+          <Button x:Name="Scan" Content="Scan library" HorizontalAlignment="Left" Style="{StaticResource Accent}"/>
+          <TextBlock x:Name="PreviewSettingsHeading" Text="Live preview" Style="{StaticResource Heading}" Margin="0,18,0,8"/>
+          <CheckBox x:Name="TexturedPreview" Content="Use original textures in the 3D preview" Margin="0,0,0,5"/>
+          <TextBlock x:Name="TexturedPreviewHint" Text="Turn off textures to see each part in a distinct color." Style="{StaticResource Muted}" TextWrapping="Wrap"/>
+          <TextBlock x:Name="AudioSettingsHeading" Text="Audio" Style="{StaticResource Heading}" Margin="0,18,0,8"/>
+          <CheckBox x:Name="MusicEnabled" Content="Play background music" Margin="0,0,0,5"/>
+          <DockPanel Margin="0,0,0,10" LastChildFill="False">
+            <Button x:Name="BrowseMusic" Content="Choose music" Margin="0,0,8,0"/>
+            <TextBlock x:Name="MusicSelection" MaxWidth="390" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+          </DockPanel>
+          <CheckBox x:Name="EffectsEnabled" Content="Play interface sounds" Margin="0,0,0,5"/>
+          <DockPanel Margin="0,0,0,6" LastChildFill="False">
+            <Button x:Name="BrowseCrash" Content="Choose error sound" Margin="0,0,8,0"/>
+            <TextBlock x:Name="CrashSelection" MaxWidth="390" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+          </DockPanel>
+          <DockPanel Margin="0,0,0,6" LastChildFill="False">
+            <Button x:Name="BrowseExportSound" Content="Choose export sound" Margin="0,0,8,0"/>
+            <TextBlock x:Name="ExportSoundSelection" MaxWidth="390" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis"/>
+          </DockPanel>
+          <Button x:Name="ResetAudio" Content="Use default audio files" HorizontalAlignment="Left"/>
+        </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <Border x:Name="GuidePage" Style="{StaticResource Panel}" Visibility="Collapsed">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel HorizontalAlignment="Left" MaxWidth="800">
+            <TextBlock x:Name="GuideHeading" Text="Guide" Style="{StaticResource Heading}" Margin="0,0,0,12"/>
+            <TextBlock x:Name="GuideText" TextWrapping="Wrap" LineHeight="23"/>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+
+    <DockPanel Grid.Row="2" Margin="0,8,0,0">
+      <Button x:Name="Notices" DockPanel.Dock="Right" Content="Scan details" MinHeight="24" Padding="8,2"/>
+      <TextBlock x:Name="Status" Style="{StaticResource Muted}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+    </DockPanel>
+  </Grid>
+</Window>

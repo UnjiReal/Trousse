@@ -1,0 +1,7 @@
+*.cs -text
+*.xaml -text
+*.ps1 -text
+*.bat -text
+*.json -text
+*.js -text
+release/README.txt -text
